@@ -34,7 +34,8 @@
     "react-dom": "^18",
     "tailwind-merge": "^2.3.0",
     "three": "^0.164.1",
-    "three-globe": "^2.31.0"
+    "three-globe": "^2.31.0",
+    "typewriter-effect": "^2.21.0"
   },
   "devDependencies": {
     "@types/node": "^20",
