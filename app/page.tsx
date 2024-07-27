@@ -2,12 +2,14 @@
 import OrbitingCircles from '@/app/components/magicui/orbiting'
 import { Writer } from '@/app/components/ui/typewriter'
 import { Icons } from './components/icons'
-import React from 'react';
+import React from 'react'
 
 export default function Home() {
   return (
     <main className="flex flex-col items-center justify-between p-16 sm:p-20 md:p-24">
-      <div className='text-2xl sm:text-4xl md:text-5xl text-black pb-0 sm:pb-8'>Xin Chào, I'm</div>
+      <div className="text-2xl sm:text-4xl md:text-5xl text-black pb-0 sm:pb-8">
+        Xin Chào, I'm
+      </div>
       <div className="relative flex h-[450px] sm:h-[500px] w-full flex-col items-center justify-center overflow-hidden">
         <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300 bg-clip-text text-center text-6xl md:text-8xl font-semibold leading-none text-transparent dark:from-white dark:to-black">
           Jack Vo
@@ -49,7 +51,6 @@ export default function Home() {
         >
           <Icons.github />
         </OrbitingCircles>
-
       </div>
       <Writer />
     </main>

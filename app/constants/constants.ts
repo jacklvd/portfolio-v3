@@ -12,7 +12,6 @@ export const data = {
   navbar: [
     { title: 'jackvd', href: '/', icon: HomeIcon },
     { title: 'meet-jack', href: '/meet-jack', icon: NotebookIcon },
-    { title: 'albums', href: '/albums', icon: BookImage },
     { title: 'blog', href: 'https://blog.jackvd.com/', icon: PencilLine },
   ],
   social: {
