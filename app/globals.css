@@ -111,6 +111,10 @@ html {
   padding: 0 1.2rem;
 }
 
+a {
+  text-decoration: none;
+}
+
 button {
   cursor: pointer;
   border: none;
@@ -186,6 +190,5 @@ img {
   :root {
     --big-font-size: 2.25rem;
   }
-
 
 }

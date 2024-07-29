@@ -9,7 +9,7 @@ interface Experience {
     company: string;
     date: string;
     url: string;
-    description: string;
+    description: string[];
 }
 
 const ExperienceSection: React.FC = () => {
@@ -68,22 +68,21 @@ const ExperienceSection: React.FC = () => {
     if (experiences.length === 0) return <div>Loading experiences...</div>;
 
     return (
-        <div className="bg-gray-900 text-gray-300 p-8 font-sans max-w-7xl mx-auto">
-            <h2 className="text-2xl font-light mb-6">Experience</h2>
+        <div className=" text-gray-800 p-8 font-sans max-w-7xl mx-auto">
 
             <div className="flex flex-col md:flex-row">
                 <div className={`w-full md:flex-none md:w-64 ${isMobile ? 'mb-4' : 'pr-4'}`}>
                     {isMobile ? (
                         <div className="md:hidden w-full mb-4">
                             <div
-                                className="bg-gray-800 p-2 rounded-md flex justify-between items-center cursor-pointer"
+                                className="bg-gray-800 text-gray-300 p-2 rounded-md flex justify-between items-center cursor-pointer"
                                 onClick={toggleDropdown}
                             >
                                 <span>{selectedExperience.company}</span>
                                 <ChevronDown className={`transition-transform duration-200 ${isDropdownOpen ? 'transform rotate-180' : ''}`} />
                             </div>
                             {isDropdownOpen && (
-                                <div className="mt-2 bg-gray-800 rounded-md overflow-hidden">
+                                <div className="mt-2 bg-gray-800 text-gray-300 rounded-md overflow-hidden">
                                     {experiences.map((exp) => (
                                         <div
                                             key={exp._id}
@@ -110,16 +109,19 @@ const ExperienceSection: React.FC = () => {
                 </div>
 
                 <div className="flex-grow md:border-l md:border-gray-700 md:pl-6">
-                    <h3 className="text-lg font-semibold">
+                    <span className="text-lg font-semibold pr-1">
                         {selectedExperience.position}
-                    </h3>
+                    </span>
+                    <a href={selectedExperience.url} target="_blank" rel="noopener noreferrer" className="text-green-400">
+                        @ {selectedExperience.company}
+                    </a>
                     <p className="text-sm text-gray-500 mb-4">{selectedExperience.date}</p>
 
                     <div className="space-y-4">
-                        <p>{selectedExperience.description}</p>
-                        <a href={selectedExperience.url} target="_blank" rel="noopener noreferrer" className="text-green-400 hover:underline">
-                            Learn more
-                        </a>
+                        <p>{selectedExperience.description.map((des) =>
+                            <li key={des}>{des}</li>
+                        )}</p>
+
                     </div>
                 </div>
             </div>
