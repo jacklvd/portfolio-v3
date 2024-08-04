@@ -5,10 +5,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300&family=Noto+Serif+Display:wght@200&family=Open+Sans&family=Playfair+Display&family=Poppins:wght@400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-
 :root {
   --header-height: 3rem;
-
 
   --hue: 0;
   --sat: 0%;
@@ -34,7 +32,6 @@
   --smaller-font-size: 0.813rem;
   --tiny-font-size: 0.685rem;
 
-
   --font-normal: 400;
   --font-medium: 500;
   --font-semi-bold: 600;
@@ -52,7 +49,6 @@
   --z-fixed: 100;
   --z-modal: 1000;
 }
-
 
 @media screen and (max-width: 992px) {
   :root {
@@ -190,5 +186,4 @@ img {
   :root {
     --big-font-size: 2.25rem;
   }
-
 }

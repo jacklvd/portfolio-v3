@@ -1,6 +1,6 @@
-/* .about {
-  background-color: var(--custom-color);
-} */
+.about {
+  padding-top: 1rem;
+}
 
 .about_container {
   grid-template-columns: repeat(2, 2fr);

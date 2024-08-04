@@ -1,0 +1,244 @@
+.projects .project_more {
+  color: var(--title-color-dark);
+  font-size: var(--h3-font-size);
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.projects .project_source {
+  display: inline-block;
+  border-radius: 0.3rem;
+  border: 0.5px solid var(--title-color-dark);
+  color: var(--title-color-dark);
+  /* // font-size: var(--normal-font-size); */
+  box-shadow: 0.25rem 0.25rem #121212;
+  transition:
+    transform 100ms,
+    box-shadow 120ms ease-in-out;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.35rem;
+  cursor: pointer;
+  a {
+    color: var(--title-color-dark);
+  }
+}
+
+.projects .project_source:hover {
+  transform: translate(0.25rem, 0.25rem);
+  box-shadow: 0.125rem 0.125rem #121212;
+  a {
+    color: var(--container-color);
+  }
+}
+
+:root {
+  --card-height: 40vw;
+  --card-margin: 4vw;
+  --card-top-offset: 1em;
+  --numcards: 4;
+  --outline-width: 0px;
+}
+
+#cards {
+  padding-bottom: calc(
+    var(--numcards) * var(--card-top-offset)
+  ); /* Make place at bottom, as items will slide to that position*/
+  margin-bottom: var(
+    --card-margin
+  ); /* Don't include the --card-margin in padding, as that will affect the scroll-timeline*/
+}
+
+#cards {
+  --numcards: 4;
+  view-timeline-name: --cards-element-scrolls-in-body;
+}
+
+.card {
+  position: sticky;
+  top: 0;
+  padding-top: calc(var(--index) * var(--card-top-offset));
+}
+
+@supports (animation-timeline: works) {
+  @scroll-timeline cards-element-scrolls-in-body {
+    source: selector(body);
+    scroll-offsets:
+              /* Start when the start edge touches the top of the scrollport */
+      selector(#cards) start 1,
+      /* End when the start edge touches the start of the scrollport */
+        selector(#cards) start 0;
+    start: selector(#cards) start 1; /* Start when the start edge touches the top of the scrollport */
+    end: selector(#cards) start 0; /* End when the start edge touches the start of the scrollport */
+    time-range: 4s;
+  }
+
+  .card {
+    --index0: calc(var(--index) - 1); /* 0-based index */
+    --reverse-index: calc(var(--numcards) - var(--index0)); /* reverse index */
+    --reverse-index0: calc(
+      var(--reverse-index) - 1
+    ); /* 0-based reverse index */
+  }
+
+  .card__content {
+    transform-origin: 50% 0%;
+    will-change: transform;
+
+    --duration: calc(var(--reverse-index0) * 1s);
+    --delay: calc(var(--index0) * 1s);
+
+    animation: var(--duration) linear scale var(--delay) forwards;
+    animation-timeline: cards-element-scrolls-in-body;
+  }
+
+  @keyframes scale {
+    to {
+      transform: scale(calc(1.1 - calc(0.1 * var(--reverse-index))));
+    }
+  }
+}
+
+#cards {
+  list-style: none;
+  outline: calc(var(--outline-width) * 10) solid blue;
+  display: grid;
+  grid-template-columns: 1fr;
+  /* // grid-template-rows: repeat(var(--numcards), var(--card-height)); */
+  grid-template-rows: repeat(var(--numcards));
+  gap: var(--card-margin);
+}
+
+.card {
+  outline: var(--outline-width) solid hotpink;
+}
+
+.card__content {
+  box-shadow:
+    0 0.2em 1em rgba(0, 0, 0, 0.1),
+    0 1em 2em rgba(0, 0, 0, 0.1);
+  background: rgb(255, 255, 255);
+  color: rgb(10, 5, 7);
+  border-radius: 1em;
+  overflow: hidden;
+
+  display: grid;
+  grid-template-areas: 'text img';
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+
+  align-items: stretch;
+  outline: var(--outline-width) solid lime;
+}
+
+.card__content > div {
+  grid-area: text;
+  width: 80%;
+  place-self: center;
+  text-align: left;
+
+  display: grid;
+  gap: 1em;
+  place-items: start;
+}
+
+.card__content > figure {
+  grid-area: img;
+  overflow: hidden;
+}
+
+.card__content > figure > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(50%) sepia(40%) hue-rotate(5deg);
+}
+
+.card__content:hover {
+  img {
+    filter: grayscale(0);
+  }
+}
+
+.btn {
+  background: var(--custom-color);
+  color: var(--title-color-dark);
+  text-decoration: none;
+  display: inline-block;
+  padding: 0.5em;
+  border-radius: 0.25em;
+  padding: 0.5em;
+}
+
+.work_button-icon {
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.work_title {
+  font-size: 2rem;
+  padding-top: 0.5rem;
+  color: var(--title-color-dark);
+}
+
+.btn:hover {
+  background: var(--title-color-dark);
+  color: var(--custom-color);
+  transform: translate(0.25rem, 0.25rem);
+  box-shadow: 0.125rem 0.125rem #121212;
+}
+
+/* // ======= BREAKPOINTS ======= */
+@media screen and (min-width: 769px) and (max-width: 992px) {
+  .work_title {
+    font-size: 1.6rem;
+    padding-top: 0.3rem;
+  }
+
+  .work_description {
+    font-size: 1.3rem;
+  }
+
+  .btn {
+    font-size: 1rem;
+    padding: 0.3rem;
+    margin-bottom: 0.6rem;
+  }
+}
+
+@media screen and (min-width: 400px) and (max-width: 768px) {
+  .work_title {
+    font-size: 1.1rem;
+    padding-top: 0.3rem;
+  }
+
+  .work_description {
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    font-size: 0.8rem;
+    padding: 0.3rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media screen and (min-width: 200px) and (max-width: 398px) {
+  .work_title {
+    font-size: 1.1rem;
+    padding-top: 0.3rem;
+  }
+
+  .work_description {
+    font-size: 0.8rem;
+  }
+
+  .btn {
+    font-size: 0.8rem;
+    padding: 0.3rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .work_button-icon {
+    font-size: 0.8rem;
+  }
+}

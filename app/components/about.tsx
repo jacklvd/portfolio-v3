@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import "./styles/about.css"
+import './styles/about.css'
 
 interface ReadMoreProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,15 +48,23 @@ export function About() {
             transition={{ duration: 1, delayChildren: 0.8 }}
             className="about_data"
           >
-            <iframe className='pb-2' style={{ border: '12px' }} src="https://open.spotify.com/embed/track/0s7RyyUlQfd8mnnboHe18n?utm_source=generator&theme=0" width="100%" height="152" allowFullScreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <iframe
+              className="pb-2"
+              style={{ border: '12px' }}
+              src="https://open.spotify.com/embed/track/0s7RyyUlQfd8mnnboHe18n?utm_source=generator&theme=0"
+              width="100%"
+              height="152"
+              allowFullScreen
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+            ></iframe>
 
             <ReadMore>
               <span role="img">👋🏻</span> Hi, I'm Long, but also go by Jack. I'm
-              a senior at the University of Cincinnati. I'm pursuing a BS
-              degree in Computer Science with an anticipated graduation in May
-              2025. I'm most passionate about solving real world problems,
-              advocating sustainability, and building community-driven
-              applications.
+              a senior at the University of Cincinnati. I'm pursuing a BS degree
+              in Computer Science with an anticipated graduation in May 2025.
+              I'm most passionate about solving real world problems, advocating
+              sustainability, and building community-driven applications.
               <br />
               <br />
               <span role="img">✨</span> I appreciate every challenge I came
@@ -94,7 +102,7 @@ export function About() {
             <Link
               href="https://drive.google.com/file/d/1hisMx0QbsGK17oNojf60JSS04x_9IH3U/view?usp=sharing"
               className="button button-flex about_button"
-              target='_blank'
+              target="_blank"
             >
               D O W N L O A D C V
             </Link>
