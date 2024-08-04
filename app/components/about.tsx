@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react/no-unescaped-entities */
 'use client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
@@ -5,7 +7,6 @@ import Link from 'next/link'
 import './styles/about.css'
 
 interface ReadMoreProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   children: any
 }
 const ReadMore: React.FC<ReadMoreProps> = ({ children }) => {

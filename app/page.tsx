@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 // import Image from 'next/image'
 import OrbitingCircles from '@/app/components/magicui/orbiting'
 import { Writer } from '@/app/components/ui/typewriter'
