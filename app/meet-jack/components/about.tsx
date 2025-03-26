@@ -106,7 +106,7 @@ export function About() {
             </ReadMore>
 
             <Link
-              href="https://drive.google.com/file/d/1hisMx0QbsGK17oNojf60JSS04x_9IH3U/view?usp=sharing"
+              href="https://drive.google.com/file/d/144P02eBpoiQ1IARvC0-FMjp8z1jeik_B/view?usp=sharing"
               className="inline-flex items-center px-4 py-3 text-sm font-medium border border-gray-900 dark:border-gray-100 
       rounded-lg shadow-[4px_4px_#121212] dark:shadow-[4px_4px_#e5e5e5] transition-all duration-100 
       text-gray-900 dark:text-gray-100 hover:bg-gray-900 hover:text-white dark:hover:bg-gray-100 dark:hover:text-gray-900
