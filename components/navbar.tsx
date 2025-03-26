@@ -63,7 +63,7 @@ export const NavBar = () => {
                         buttonVariants({ variant: 'ghost', size: 'icon' }),
                         'size-12 relative',
                         pathname === item.href
-                          ? 'text-black'
+                          ? 'text-primary'
                           : 'text-foreground',
                       )}
                     >
