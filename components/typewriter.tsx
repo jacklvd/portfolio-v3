@@ -4,7 +4,7 @@ import Typewriter from 'typewriter-effect'
 
 export const Writer: React.FC = () => {
   return (
-    <div className="md:text-5xl text-2xl sm:text-md text-gray-900">
+    <div className="md:text-5xl text-2xl sm:text-md text-gray-900 dark:text-gray-100">
       <Typewriter
         options={{
           loop: true,

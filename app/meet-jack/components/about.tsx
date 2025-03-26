@@ -3,8 +3,10 @@
 'use client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { FileText } from 'lucide-react'
 import Link from 'next/link'
-import './styles/about.css'
+import Image from 'next/image'
+import '@/components/styles/about.css'
 
 interface ReadMoreProps {
   children: any
@@ -28,17 +30,18 @@ const ReadMore: React.FC<ReadMoreProps> = ({ children }) => {
 export function About() {
   return (
     <section className="about section">
-      <h2
-        className="section_title"
-        style={{ color: 'var(--title-color-dark)' }}
-      >
-        About Me
+      <h2 className="text-3xl font-bold tracking-tight mb-2 text-center">
+        About Me<span className="text-primary">_</span>
       </h2>
-      <span className="section_subtitle">Let's get to know me</span>
+      <p className="text-muted-foreground text-center mb-12">
+        Let get to know me better
+      </p>
 
       <div className="about_container container grid">
-        <img
+        <Image
           src="/images/hero.jpeg"
+          width={300}
+          height={300}
           alt="Jack Vo"
           className="about_img"
           loading="lazy"
@@ -49,16 +52,18 @@ export function About() {
             transition={{ duration: 1, delayChildren: 0.8 }}
             className="about_data"
           >
-            <iframe
-              className="pb-2"
-              style={{ border: '12px' }}
-              src="https://open.spotify.com/embed/track/0s7RyyUlQfd8mnnboHe18n?utm_source=generator&theme=0"
-              width="100%"
-              height="152"
-              allowFullScreen
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              loading="lazy"
-            ></iframe>
+            {/* Spotify embed */}
+            <div className="mb-6 rounded-md overflow-hidden border">
+              <iframe
+                style={{ borderRadius: '12px' }}
+                src="https://open.spotify.com/embed/track/0s7RyyUlQfd8mnnboHe18n?utm_source=generator&theme=0"
+                width="100%"
+                height="152"
+                allowFullScreen
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+              ></iframe>
+            </div>
 
             <ReadMore>
               <span role="img">👋🏻</span> Hi, I'm Long, but also go by Jack. I'm
@@ -102,10 +107,15 @@ export function About() {
 
             <Link
               href="https://drive.google.com/file/d/1hisMx0QbsGK17oNojf60JSS04x_9IH3U/view?usp=sharing"
-              className="button button-flex about_button"
+              className="inline-flex items-center px-4 py-3 text-sm font-medium border border-gray-900 dark:border-gray-100 
+      rounded-lg shadow-[4px_4px_#121212] dark:shadow-[4px_4px_#e5e5e5] transition-all duration-100 
+      text-gray-900 dark:text-gray-100 hover:bg-gray-900 hover:text-white dark:hover:bg-gray-100 dark:hover:text-gray-900
+      hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_#121212] dark:hover:shadow-[2px_2px_#e5e5e5] tracking-widest"
               target="_blank"
+              rel="noopener noreferrer"
             >
-              D O W N L O A D C V
+              <FileText className="mr-2 h-4 w-4" />
+              DOWNLOAD CV
             </Link>
           </motion.div>
         </div>
