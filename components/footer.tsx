@@ -52,7 +52,7 @@ export default function Footer() {
               ))}
             </div>
 
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-muted-foreground flex items-center md:items-start">
               <p>
                 &copy; {new Date().getFullYear()} Built and Designed by Jack Vo
               </p>
