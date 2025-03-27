@@ -67,8 +67,8 @@ export function About() {
 
             <ReadMore>
               <span role="img">👋🏻</span> Hi, I'm Long, but also go by Jack. I'm
-              a senior at the University of Cincinnati. I'm pursuing a BS degree
-              in Computer Science with an anticipated graduation in May 2025.
+              a computer science major student. I'm pursuing a BS degree
+              in Computer Science with an incoming MS of Computer Science.
               I'm most passionate about solving real world problems, advocating
               sustainability, and building community-driven applications.
               <br />
