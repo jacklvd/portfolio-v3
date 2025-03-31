@@ -1,13 +1,11 @@
+// app/layout.tsx
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { NavBar } from '@/components/navbar'
-import { TooltipProvider } from '@/components/ui/tooltip'
-import Loading from '@/components/loading'
-import { Suspense } from 'react'
+// import { Suspense } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
-import { ThemeToggle } from '@/components/theme-toggle'
-// import { Toaster } from '@/components/ui/toaster'
+import { LoadingProvider } from '@/context/loading-context'
+import ClientAppContent from '@/components/client-app-content'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -36,14 +34,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <TooltipProvider delayDuration={0}>
-            <div className="fixed top-4 right-4 z-50">
-              <ThemeToggle />
-            </div>
-            <Suspense fallback={<Loading />}>{children}</Suspense>
-            {/* <Toaster /> */}
-            <NavBar />
-          </TooltipProvider>
+          <LoadingProvider>
+            <ClientAppContent>{children}</ClientAppContent>
+          </LoadingProvider>
         </ThemeProvider>
       </body>
     </html>
