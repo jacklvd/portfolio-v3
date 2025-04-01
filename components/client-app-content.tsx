@@ -10,39 +10,39 @@ import { NavBar } from '@/components/navbar'
 import { useLoading } from '@/context/loading-context'
 
 export default function ClientAppContent({
-    children
+  children,
 }: {
-    children: React.ReactNode
+  children: React.ReactNode
 }) {
-    // Add isMounted state to prevent hydration mismatch
-    const [isMounted, setIsMounted] = useState(false)
+  // Add isMounted state to prevent hydration mismatch
+  const [isMounted, setIsMounted] = useState(false)
 
-    useEffect(() => {
-        setIsMounted(true)
-    }, [])
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
-    return (
-        <TooltipProvider delayDuration={0}>
-            {isMounted ? <AppLoader>{children}</AppLoader> : children}
-            <div className="fixed top-4 right-4 z-50">
-                <ThemeToggle />
-            </div>
-            {/* <Toaster /> */}
-            <NavBar />
-        </TooltipProvider>
-    )
+  return (
+    <TooltipProvider delayDuration={0}>
+      {isMounted ? <AppLoader>{children}</AppLoader> : children}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+      {/* <Toaster /> */}
+      <NavBar />
+    </TooltipProvider>
+  )
 }
 
 function AppLoader({ children }: { children: React.ReactNode }) {
-    const { isLoading } = useLoading()
+  const { isLoading } = useLoading()
 
-    return (
-        <>
-            {isLoading ? (
-                <SkeletonLoading />
-            ) : (
-                <Suspense fallback={<Loading />}>{children}</Suspense>
-            )}
-        </>
-    )
+  return (
+    <>
+      {isLoading ? (
+        <SkeletonLoading />
+      ) : (
+        <Suspense fallback={<Loading />}>{children}</Suspense>
+      )}
+    </>
+  )
 }

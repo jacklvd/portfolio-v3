@@ -44,7 +44,7 @@ export const NavBar = () => {
 
   return (
     <motion.div
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-30 mx-auto mb-4 flex origin-bottom h-full max-h-14"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-30 mx-auto mb-6 flex origin-bottom h-full max-h-14"
       initial="hidden"
       animate="visible"
       variants={navVariants}

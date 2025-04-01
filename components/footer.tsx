@@ -30,9 +30,8 @@ export default function Footer() {
           <div className="flex flex-col items-center md:items-start gap-2">
             <h3 className="font-medium text-lg">Jack Vo</h3>
             <p className="text-sm text-muted-foreground max-w-md text-center md:text-left">
-              A Software Engineer, passionate
-              about solving real world problems and building community-driven
-              applications.
+              A Software Engineer, passionate about solving real world problems
+              and building community-driven applications.
             </p>
           </div>
 

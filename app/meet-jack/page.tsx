@@ -16,10 +16,25 @@ export default function Portfolio() {
   const [showScrollTop, setShowScrollTop] = useState(false)
   const { isLoading } = useLoading()
   const [isMounted, setIsMounted] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
-  // Set isMounted to true on mount
+  // Set isMounted to true on mount and check screen width
   useEffect(() => {
     setIsMounted(true)
+
+    // Check if screen width is 375px or less
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 375)
+    }
+
+    // Initial check
+    checkMobile()
+
+    // Add resize listener to update when window is resized
+    window.addEventListener('resize', checkMobile)
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
   // Check scroll position to show/hide scroll-to-top button
@@ -28,7 +43,7 @@ export default function Portfolio() {
 
     try {
       const handleScroll = () => {
-        if (window.scrollY > 500) {
+        if (window.scrollY > 500 && !isMobile) {
           setShowScrollTop(true)
         } else {
           setShowScrollTop(false)
@@ -40,7 +55,7 @@ export default function Portfolio() {
     } catch (error) {
       console.error('Scroll event error:', error)
     }
-  }, [isMounted])
+  }, [isMounted, isMobile])
 
   const scrollToTop = () => {
     try {
@@ -79,13 +94,13 @@ export default function Portfolio() {
 
         <Footer />
 
-        {/* Scroll to top button */}
+        {/* Scroll to top button - hidden on mobile */}
         {showScrollTop && (
           <Button
             variant="ghost"
             onClick={scrollToTop}
             size="icon"
-            className="fixed bottom-6 right-6 rounded-full opacity-90 shadow-md z-50"
+            className="fixed bottom-6 right-6 rounded-full opacity-90 shadow-md z-50 hidden sm:flex"
             aria-label="Scroll to top"
           >
             <ChevronUp size={20} />
