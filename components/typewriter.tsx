@@ -20,7 +20,7 @@ export const Writer: React.FC = () => {
             .typeString('a Problem Solver')
             .pauseFor(1000)
             .deleteAll()
-            .typeString('a Bun Bo Hue Lover')
+            .typeString('a Pho Bo Lover')
             .pauseFor(1000)
             .deleteAll()
             .typeString('a Traveler')

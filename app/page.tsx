@@ -16,7 +16,7 @@ export default function Home() {
   ]
 
   return (
-    <main className="flex flex-col items-center justify-between p-16 sm:p-20 md:p-24">
+    <main className="flex flex-col items-center justify-between p-12 sm:p-14 md:p-18">
       <div className="text-2xl sm:text-4xl md:text-5xl text-black dark:text-white pb-0 sm:pb-8">
         Xin Chào, I'm
       </div>
