@@ -13,7 +13,7 @@ interface Work {
   description: string
   technologies: string[]
   source: string
-  liveUrl?: string
+  demo?: string
   image: any
 }
 
@@ -134,10 +134,10 @@ const Project = () => {
                         <span>Source</span>
                       </a>
                     </Button>
-                    {work.liveUrl && (
+                    {work.demo && (
                       <Button size="sm" asChild>
                         <a
-                          href={work.liveUrl}
+                          href={work.demo}
                           target="_blank"
                           rel="noreferrer"
                           className="flex items-center gap-2"
