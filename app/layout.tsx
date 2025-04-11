@@ -5,6 +5,7 @@ import './globals.css'
 // import { Suspense } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
 import { LoadingProvider } from '@/context/loading-context'
+import { CursorProvider } from '@/components/cursor-provider'
 import ClientAppContent from '@/components/client-app-content'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -35,7 +36,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <LoadingProvider>
-            <ClientAppContent>{children}</ClientAppContent>
+            <CursorProvider>
+              <ClientAppContent>{children}</ClientAppContent>
+            </CursorProvider>
           </LoadingProvider>
         </ThemeProvider>
       </body>

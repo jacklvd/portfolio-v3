@@ -46,6 +46,7 @@ export function About() {
           className="about_img"
           loading="lazy"
         />
+
         <div className="about_data">
           <motion.div
             whileInView={{ opacity: [0, 1] }}
@@ -56,7 +57,7 @@ export function About() {
             <div className="mb-6 rounded-md overflow-hidden border">
               <iframe
                 style={{ borderRadius: '12px' }}
-                src="https://open.spotify.com/embed/track/0s7RyyUlQfd8mnnboHe18n?utm_source=generator&theme=0"
+                src="https://open.spotify.com/embed/track/7a86XRg84qjasly9f6bPSD?utm_source=generator&theme=0"
                 width="100%"
                 height="152"
                 allowFullScreen

@@ -175,7 +175,7 @@ img {
   }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 768px) and (pointer: coarse) {
   body {
     margin: 0 0 var(--header-height) 0;
   }
@@ -190,6 +190,16 @@ img {
 
   .section_subtitle {
     margin-bottom: var(--mb-3);
+  }
+
+  .custom-cursor,
+  .custom-cursor * {
+    cursor: auto !important;
+  }
+
+  /* Hide custom cursor elements on mobile */
+  .custom-cursor-element {
+    display: none !important;
   }
 }
 

@@ -1,21 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { client, urlFor } from '../../../client/client'
+import { client, urlFor } from '@/client/client'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
-import { Github, ExternalLink } from 'lucide-react'
-
-interface Work {
-  _id: string
-  title: string
-  description: string
-  technologies: string[]
-  source: string
-  demo?: string
-  image: any
-}
+import { Github, ExternalLink, Star } from 'lucide-react'
+import BentoCard from '@/components/magicui/bento-card'
 
 const Project = () => {
   const [works, setWorks] = useState<Work[]>([])
@@ -26,7 +17,12 @@ const Project = () => {
     client
       .fetch('*[_type == "work"] | order(orderRank)')
       .then((data) => {
-        setWorks(data)
+        // Mark first 4 projects as featured
+        const modifiedData = data.map((work: any, index: number) => ({
+          ...work,
+          featured: index < 4,
+        }))
+        setWorks(modifiedData)
         setIsLoading(false)
       })
       .catch((error) => {
@@ -62,6 +58,10 @@ const Project = () => {
     return text.substring(0, maxLength) + '...'
   }
 
+  // Filter featured and non-featured projects
+  const featuredWorks = works.filter((work) => work.featured)
+  const regularWorks = works.filter((work) => !work.featured)
+
   return (
     <section className="py-16 md:py-24 section" id="work">
       <div className="container px-4 mx-auto">
@@ -77,81 +77,141 @@ const Project = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {works.map((work) => (
-              <motion.div
-                key={work._id}
-                variants={itemVariants}
-                className="h-full"
-              >
-                <Card className="flex flex-col h-full overflow-hidden group hover:shadow-lg transition-all duration-300">
-                  <div className="aspect-video overflow-hidden">
-                    <img
-                      src={urlFor(work.image).width(600).url()}
-                      alt={work.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                  </div>
-                  <CardContent className="p-6 flex-grow flex flex-col">
-                    <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
-                    <p className="text-muted-foreground mb-4 flex-grow line-clamp-3">
-                      {truncateText(work.description, 120)}
-                    </p>
-                    {work.technologies && (
-                      <div className="flex flex-wrap gap-2 mt-auto">
-                        {work.technologies.slice(0, 3).map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="secondary"
-                            className="font-normal"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                        {work.technologies.length > 3 && (
-                          <Badge variant="outline" className="font-normal">
-                            +{work.technologies.length - 3}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                  </CardContent>
-                  <CardFooter className="px-6 py-4 flex gap-3 border-t mt-auto">
-                    <Button variant="outline" size="sm" asChild>
-                      <a
-                        href={work.source}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-2"
-                      >
-                        <Github size={16} />
-                        <span>Source</span>
-                      </a>
-                    </Button>
-                    {work.demo && (
-                      <Button size="sm" asChild>
-                        <a
-                          href={work.demo}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-2"
-                        >
-                          <ExternalLink size={16} />
-                          <span>Live Demo</span>
-                        </a>
-                      </Button>
-                    )}
-                  </CardFooter>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
+          <>
+            {/* Bento Grid for Featured Projects */}
+            {featuredWorks.length > 0 && (
+              <div className="mb-16">
+                {/* <div className="flex items-center gap-2 mb-6">
+                  <Star className="text-primary" size={18} />
+                  <h3 className="text-xl font-semibold">Featured Projects</h3>
+                </div> */}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]">
+                  {/* First project (large) */}
+                  <motion.div
+                    className="lg:col-span-2 lg:row-span-2"
+                    variants={itemVariants}
+                  >
+                    <BentoCard work={featuredWorks[0]} size="large" />
+                  </motion.div>
+
+                  {/* Second project (medium) */}
+                  {featuredWorks.length > 1 && (
+                    <motion.div
+                      className="lg:col-span-2"
+                      variants={itemVariants}
+                    >
+                      <BentoCard work={featuredWorks[1]} size="medium" />
+                    </motion.div>
+                  )}
+
+                  {/* Third project (small) */}
+                  {featuredWorks.length > 2 && (
+                    <motion.div variants={itemVariants}>
+                      <BentoCard work={featuredWorks[2]} size="small" />
+                    </motion.div>
+                  )}
+
+                  {/* Fourth project (small) */}
+                  {featuredWorks.length > 3 && (
+                    <motion.div variants={itemVariants}>
+                      <BentoCard work={featuredWorks[3]} size="small" />
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Regular Grid for Other Projects */}
+            {regularWorks.length > 0 && (
+              <>
+                {/* <div className="flex items-center gap-2 mb-6">
+                  <h3 className="text-xl font-semibold">More Projects</h3>
+                </div> */}
+
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  {regularWorks.map((work) => (
+                    <motion.div
+                      key={work._id}
+                      variants={itemVariants}
+                      className="h-full"
+                    >
+                      <Card className="flex flex-col h-full overflow-hidden group hover:shadow-lg transition-all duration-300">
+                        <div className="aspect-video overflow-hidden">
+                          <img
+                            src={urlFor(work.image).width(600).url()}
+                            alt={work.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            loading="lazy"
+                          />
+                        </div>
+                        <CardContent className="p-6 flex-grow flex flex-col">
+                          <h3 className="text-xl font-semibold mb-2">
+                            {work.title}
+                          </h3>
+                          <p className="text-muted-foreground mb-4 flex-grow line-clamp-3">
+                            {truncateText(work.description, 120)}
+                          </p>
+                          {work.technologies && (
+                            <div className="flex flex-wrap gap-2 mt-auto">
+                              {work.technologies.slice(0, 3).map((tag) => (
+                                <Badge
+                                  key={tag}
+                                  variant="secondary"
+                                  className="font-normal"
+                                >
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {work.technologies.length > 3 && (
+                                <Badge
+                                  variant="outline"
+                                  className="font-normal"
+                                >
+                                  +{work.technologies.length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                        </CardContent>
+                        <CardFooter className="px-6 py-4 flex gap-3 border-t mt-auto">
+                          <Button variant="outline" size="sm" asChild>
+                            <a
+                              href={work.source}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="flex items-center gap-2"
+                            >
+                              <Github size={16} />
+                              <span>Source</span>
+                            </a>
+                          </Button>
+                          {work.demo && (
+                            <Button size="sm" asChild>
+                              <a
+                                href={work.demo}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center gap-2"
+                              >
+                                <ExternalLink size={16} />
+                                <span>Live Demo</span>
+                              </a>
+                            </Button>
+                          )}
+                        </CardFooter>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </>
+            )}
+          </>
         )}
 
         <div className="text-center mt-10">
