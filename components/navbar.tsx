@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import { data } from '@/constants';
 import Link from 'next/link';
@@ -90,7 +91,7 @@ export const NavBar = () => {
 					<Separator orientation="vertical" className="h-full" />
 					{Object.entries(data.social)
 						.filter(([_, social]) => social.navbar)
-						.map(([name, social], i) => (
+						.map(([name, social]) => (
 							<motion.div key={name} variants={itemVariants}>
 								<DockIcon>
 									<Tooltip>
