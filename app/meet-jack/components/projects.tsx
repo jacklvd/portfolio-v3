@@ -4,6 +4,7 @@ import { client, urlFor } from '@/client/client';
 import { motion } from 'framer-motion';
 import { Github } from 'lucide-react';
 import BentoCard from '@/components/magicui/bento-card';
+import Image from 'next/image';
 
 const Project = () => {
 	const [works, setWorks] = useState<Work[]>([]);
@@ -191,10 +192,12 @@ const Project = () => {
 
 													<div className="p-4 flex-grow flex flex-col">
 														<div className="aspect-video overflow-hidden border border-green-400 mb-3">
-															<img
-																src={urlFor(work.image).width(600).url()}
+															<Image
+																src={urlFor(work.image).url()}
 																alt={work.title}
-																className="w-full h-full object-cover filter contrast-125 brightness-110 group-hover:filter-none transition-all duration-500"
+																width={600}
+																height={338}
+																className="w-full h-full object-cover filter contrast-125 brightness-95 group-hover:filter-none transition-all duration-500"
 																loading="lazy"
 															/>
 														</div>
