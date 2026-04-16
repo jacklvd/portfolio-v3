@@ -1,14 +1,18 @@
 // app/layout.tsx
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, DM_Serif_Display } from 'next/font/google'
 import './globals.css'
-// import { Suspense } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
 import { LoadingProvider } from '@/context/loading-context'
 import { CursorProvider } from '@/components/cursor-provider'
 import ClientAppContent from '@/components/client-app-content'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const dmSerif = DM_Serif_Display({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-dm-serif',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -33,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${dmSerif.variable} font-sans`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <LoadingProvider>
             <CursorProvider>

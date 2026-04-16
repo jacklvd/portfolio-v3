@@ -1,20 +1,16 @@
 // components/client-app-content.tsx
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import Loading from '@/components/loading'
-import SkeletonLoading from '@/components/skeletonloading'
-import { Suspense } from 'react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { NavBar } from '@/components/navbar'
-import { useLoading } from '@/context/loading-context'
+import Preloader from '@/components/preloader'
 
 export default function ClientAppContent({
   children,
 }: {
   children: React.ReactNode
 }) {
-  // Add isMounted state to prevent hydration mismatch
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -27,21 +23,31 @@ export default function ClientAppContent({
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
       </div>
-      {/* <Toaster /> */}
       <NavBar />
     </TooltipProvider>
   )
 }
 
 function AppLoader({ children }: { children: React.ReactNode }) {
-  const { isLoading } = useLoading()
+  const [mounted, setMounted] = useState(false)
+  // const [isFirstVisit, setIsFirstVisit] = useState(false)
+  const [preloaderDone, setPreloaderDone] = useState(false)
+
+  useEffect(() => {
+    // try {
+    //   const visited = localStorage.getItem('has_visited')
+    //   if (!visited) setIsFirstVisit(true)
+    // } catch {
+    //   // localStorage unavailable (private browsing, etc.)
+    // }
+    setMounted(true)
+  }, [])
 
   return (
     <>
-      {isLoading ? (
-        <SkeletonLoading />
-      ) : (
-        <Suspense fallback={<Loading />}>{children}</Suspense>
+      <Suspense fallback={null}>{children}</Suspense>
+      {mounted && !preloaderDone && (
+        <Preloader onComplete={() => setPreloaderDone(true)} />
       )}
     </>
   )

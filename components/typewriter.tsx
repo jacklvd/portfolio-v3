@@ -4,27 +4,30 @@ import Typewriter from 'typewriter-effect'
 
 export const Writer: React.FC = () => {
   return (
-    <div className="md:text-5xl text-2xl sm:text-md text-gray-900 dark:text-gray-100">
+    <div className="text-[0.6rem] tracking-[0.4em] uppercase text-muted-foreground [&_.Typewriter\_\_cursor]:text-muted-foreground [&_.Typewriter\_\_cursor]:font-light">
       <Typewriter
         options={{
           loop: true,
+          cursor: '_',
+          delay: 55,
+          deleteSpeed: 25,
         }}
         onInit={(typewriter) => {
           typewriter
             .typeString('a Curious Scholar')
-            .pauseFor(1000)
+            .pauseFor(1800)
             .deleteAll()
             .typeString('a Technology Lover')
-            .pauseFor(1000)
+            .pauseFor(1800)
             .deleteAll()
             .typeString('a Problem Solver')
-            .pauseFor(1000)
+            .pauseFor(1800)
             .deleteAll()
             .typeString('a Pho Bo Lover')
-            .pauseFor(1000)
+            .pauseFor(1800)
             .deleteAll()
             .typeString('a Traveler')
-            .pauseFor(1000)
+            .pauseFor(1800)
             .deleteAll()
             .start()
         }}
