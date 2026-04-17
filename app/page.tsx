@@ -3,10 +3,10 @@ import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { data } from '@/constants';
-import { Writer } from '@/components/typewriter';
-import { Sticker } from '@/components/sticker';
+import { Writer } from '@/components/effects/typewriter';
+import { Sticker } from '@/components/effects/sticker';
 
-const Scene = dynamic(() => import('@/components/scene'), { ssr: false });
+const Scene = dynamic(() => import('@/components/effects/scene'), { ssr: false });
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 28 },

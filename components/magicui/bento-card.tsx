@@ -1,117 +1,151 @@
 import { urlFor } from '@/client/client';
+import { GitBranch, ExternalLink } from 'lucide-react';
 
 const BentoCard = ({
-	work,
-	size,
+  work,
+  size,
 }: {
-	work: Work;
-	size: 'small' | 'medium' | 'large';
+  work: Work;
+  size: 'small' | 'medium' | 'large';
 }) => {
-	const truncateDescription = (text: string) => {
-		const maxLength = size === 'large' ? 150 : size === 'medium' ? 100 : 70;
-		if (text.length <= maxLength) return text;
-		return text.substring(0, maxLength) + '...';
-	};
+  const maxLen = size === 'large' ? 160 : size === 'medium' ? 110 : 75;
+  const desc =
+    work.description.length > maxLen
+      ? work.description.slice(0, maxLen) + '…'
+      : work.description;
 
-	return (
-		<div
-			className={`group relative h-full rounded-lg overflow-hidden bg-gray-900 border border-gray-600 hover:border-gray-400 transition-all duration-300 font-mono`}
-		>
-			{/* macOS terminal header */}
-			<div className="bg-gray-800 px-3 py-2 flex items-center justify-between group-hover:bg-gray-700 transition-colors border-b border-gray-600">
-				<div className="flex space-x-1">
-					<div className="w-2 h-2 bg-red-500 rounded-full"></div>
-					<div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-					<div className="w-2 h-2 bg-green-500 rounded-full"></div>
-				</div>
-				<span className="font-mono text-xs text-gray-300">
-					{work.title.slice(0, 20)}
-				</span>
-				<div className="w-4"></div>
-			</div>
+  const tagLimit = size === 'small' ? 2 : 3;
+  const extra = work.technologies
+    ? work.technologies.length - tagLimit
+    : 0;
 
-			<div className="relative">
-				<div className="aspect-video overflow-hidden border-b border-gray-600">
-					<img
-						src={urlFor(work.image).width(800).url()}
-						alt={work.title}
-						className="w-full h-full object-cover filter contrast-125 brightness-110 group-hover:filter-none transition-all duration-700"
-						loading="lazy"
-					/>
-				</div>
-			</div>
+  const Links = () => (
+    <div className="flex items-center gap-4">
+      <a
+        href={work.source}
+        target="_blank"
+        rel="noreferrer"
+        className="flex items-center gap-1.5 text-xs tracking-wide hover:opacity-70 transition-opacity"
+      >
+        <GitBranch size={12} />
+        Source
+      </a>
+      {work.demo && (
+        <a
+          href={work.demo}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-1.5 text-xs tracking-wide hover:opacity-70 transition-opacity"
+        >
+          <ExternalLink size={12} />
+          Demo
+        </a>
+      )}
+    </div>
+  );
 
-			<div className="p-4 text-green-400">
-				<div className="text-green-400 font-mono text-xs mb-2">
-					C:\&gt; cat project_details.txt
-				</div>
+  const Tags = ({ light = false }: { light?: boolean }) => (
+    work.technologies ? (
+      <div className="flex flex-wrap gap-1.5">
+        {work.technologies.slice(0, tagLimit).map((tag: string) => (
+          <span
+            key={tag}
+            className={`px-2 py-0.5 text-[0.6rem] tracking-wider uppercase border ${
+              light
+                ? 'border-white/30 text-white/70'
+                : 'border-foreground/15 text-muted-foreground'
+            }`}
+          >
+            {tag}
+          </span>
+        ))}
+        {extra > 0 && (
+          <span
+            className={`px-2 py-0.5 text-[0.6rem] tracking-wider uppercase border ${
+              light
+                ? 'border-white/30 text-white/70'
+                : 'border-foreground/15 text-muted-foreground'
+            }`}
+          >
+            +{extra}
+          </span>
+        )}
+      </div>
+    ) : null
+  );
 
-				<div>
-					<h3
-						className={`font-bold text-yellow-400 font-mono mb-2 group-hover:text-cyan-400 transition-colors ${size === 'large' ? 'text-lg' : 'text-sm'}`}
-					>
-						&gt; {work.title}
-					</h3>
-					<p className="text-green-300 font-mono text-xs mb-4 leading-relaxed">
-						{truncateDescription(work.description)}
-					</p>
-				</div>
+  /* ── Large card: full-bleed image + gradient overlay ── */
+  if (size === 'large') {
+    return (
+      <div className="group relative h-full overflow-hidden border border-foreground/10 hover:border-foreground/30 transition-colors duration-300">
+        {/* Image */}
+        <img
+          src={urlFor(work.image).width(900).url()}
+          alt={work.title}
+          className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700"
+          loading="lazy"
+        />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-				<div className="mt-auto">
-					{work.technologies && (
-						<div className="mb-4">
-							<div className="text-cyan-400 font-mono text-xs mb-1">
-								[TECH_STACK]:
-							</div>
-							<div className="flex flex-wrap gap-1">
-								{work.technologies
-									.slice(0, size === 'small' ? 2 : 3)
-									.map(tag => (
-										<span
-											key={tag}
-											className="px-2 py-1 bg-green-900 border border-green-400 text-green-300 font-mono text-xs rounded-none"
-										>
-											{tag}
-										</span>
-									))}
-								{work.technologies.length > (size === 'small' ? 2 : 3) && (
-									<span className="px-2 py-1 bg-yellow-900 border border-yellow-400 text-yellow-300 font-mono text-xs rounded-none">
-										+{work.technologies.length - (size === 'small' ? 2 : 3)}
-									</span>
-								)}
-							</div>
-						</div>
-					)}
+        {/* Content pinned to bottom */}
+        <div className="absolute bottom-0 left-0 right-0 p-5 text-white space-y-3">
+          <h3 className="font-serif text-xl leading-snug">{work.title}</h3>
+          <p className="text-sm text-white/70 leading-relaxed">{desc}</p>
+          <Tags light />
+          <div className="pt-1 text-white/80">
+            <Links />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-					<div className="flex gap-2">
-						<a
-							href={work.source}
-							target="_blank"
-							rel="noreferrer"
-							className="flex-1 bg-green-400 text-black px-2 py-1 font-mono text-xs font-bold hover:bg-yellow-400 transition-colors text-center rounded-none border-2 border-green-400 hover:border-yellow-400"
-						>
-							{size === 'small' ? '[SRC]' : '[SOURCE.GIT]'}
-						</a>
-						{work.demo && (
-							<a
-								href={work.demo}
-								target="_blank"
-								rel="noreferrer"
-								className="flex-1 bg-cyan-400 text-black px-2 py-1 font-mono text-xs font-bold hover:bg-yellow-400 transition-colors text-center rounded-none border-2 border-cyan-400 hover:border-yellow-400"
-							>
-								{size === 'small' ? '[DEMO]' : '[DEMO.EXE]'}
-							</a>
-						)}
-					</div>
-				</div>
+  /* ── Medium card: image left, content right ── */
+  if (size === 'medium') {
+    return (
+      <div className="group h-full border border-foreground/10 hover:border-foreground/30 transition-colors duration-300 flex overflow-hidden">
+        <div className="w-2/5 shrink-0 overflow-hidden">
+          <img
+            src={urlFor(work.image).width(600).url()}
+            alt={work.title}
+            className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+            loading="lazy"
+          />
+        </div>
+        <div className="flex flex-col justify-between p-5 flex-1">
+          <div className="space-y-2">
+            <h3 className="font-serif text-lg leading-snug text-foreground">{work.title}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+          </div>
+          <div className="space-y-3 mt-4">
+            <Tags />
+            <Links />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-				<div className="text-green-400 font-mono text-xs mt-2">
-					[STATUS]: {work.demo ? 'DEPLOYED' : 'DEVELOPMENT'} | [TYPE]:{' '}
-					{size.toUpperCase()}
-				</div>
-			</div>
-		</div>
-	);
+  /* ── Small card: image top, content below ── */
+  return (
+    <div className="group h-full border border-foreground/10 hover:border-foreground/30 transition-colors duration-300 flex flex-col overflow-hidden">
+      <div className="aspect-video overflow-hidden">
+        <img
+          src={urlFor(work.image).width(500).url()}
+          alt={work.title}
+          className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+          loading="lazy"
+        />
+      </div>
+      <div className="flex flex-col flex-1 p-4 space-y-3">
+        <h3 className="font-serif text-base leading-snug text-foreground">{work.title}</h3>
+        <p className="text-xs text-muted-foreground leading-relaxed flex-1">{desc}</p>
+        <Tags />
+        <Links />
+      </div>
+    </div>
+  );
 };
 
 export default BentoCard;

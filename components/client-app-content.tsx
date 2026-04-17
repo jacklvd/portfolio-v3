@@ -2,9 +2,9 @@
 'use client'
 import { useEffect, useState, Suspense } from 'react'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { NavBar } from '@/components/navbar'
-import Preloader from '@/components/preloader'
+import { ThemeToggle } from '@/components/theme/theme-toggle'
+import { NavBar } from '@/components/layout/navbar'
+import Preloader from '@/components/loading/preloader'
 
 export default function ClientAppContent({
   children,

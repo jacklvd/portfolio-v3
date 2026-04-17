@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { About } from './components/about';
 import ExperienceSection from './components/experience';
-import Footer from '../../components/footer';
+import Footer from '../../components/layout/footer';
 import Project from './components/projects';
 import { PublicationsSection } from './components/publications';
 import { ChevronUp } from 'lucide-react';
 import { useLoading } from '@/context/loading-context';
-import SkeletonLoading from '@/components/skeletonloading';
+import SkeletonLoading from '@/components/loading/skeletonloading';
 import { ErrorBoundary } from '@/components/error-boundary';
 
 export default function Portfolio() {
@@ -79,10 +79,10 @@ export default function Portfolio() {
 
 	return (
 		<ErrorBoundary>
-			<div className="min-h-screen flex flex-col retro-section">
+			<div className="min-h-screen flex flex-col">
 				{/* Main content */}
 				<main className="flex-1">
-					<div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+					<div className="w-full max-w-6xl mx-auto px-6 sm:px-10 md:px-16">
 						<About />
 						<ExperienceSection />
 						<Project />
@@ -95,17 +95,13 @@ export default function Portfolio() {
 
 				{/* Retro scroll to top button - hidden on mobile */}
 				{showScrollTop && (
-					<div
+					<button
 						onClick={scrollToTop}
-						className="fixed bottom-6 right-6 z-50 hidden sm:block cursor-pointer group"
+						className="fixed bottom-6 right-6 z-50 hidden sm:flex items-center justify-center w-9 h-9 border border-foreground/20 bg-background hover:border-foreground/50 transition-colors"
 						aria-label="Scroll to top"
 					>
-						<div className="bg-green-400 text-black border-2 border-green-400 rounded-none p-2 hover:bg-yellow-400 hover:border-yellow-400 transition-colors font-mono font-bold">
-							<div className="flex items-center gap-2">
-								<ChevronUp size={12} />
-							</div>
-						</div>
-					</div>
+						<ChevronUp size={14} className="text-foreground/60" />
+					</button>
 				)}
 			</div>
 		</ErrorBoundary>
