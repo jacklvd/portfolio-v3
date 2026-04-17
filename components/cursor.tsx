@@ -1,154 +1,137 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
-import { useTheme } from 'next-themes'
+import { useEffect, useRef, useState } from 'react'
 
-interface AdvancedCursorProps {
-  color?: string
-  size?: number
-  ringSize?: number
-  magneticStrength?: number
-}
+const LERP = 0.12 // ring follow speed (0 = no follow, 1 = instant)
 
-const AdvancedCursor: React.FC<AdvancedCursorProps> = ({
-  color,
-  size = 8,
-  ringSize = 32,
-  magneticStrength = 0.3,
-}) => {
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-  const [visible, setVisible] = useState(false)
-  const [isClicking, setIsClicking] = useState(false)
-  const [isHovering, setIsHovering] = useState(false)
-  const [magnetElement, setMagnetElement] = useState<HTMLElement | null>(null)
-
-  const cursorRef = useRef<HTMLDivElement>(null)
+export default function Cursor() {
+  const dotRef  = useRef<HTMLDivElement>(null)
   const ringRef = useRef<HTMLDivElement>(null)
 
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
+  // Raw cursor position
+  const mouse   = useRef({ x: -200, y: -200 })
+  // Smoothed ring position
+  const ring    = useRef({ x: -200, y: -200 })
 
-  // Cursor color based on theme
-  const cursorColor =
-    color || (isDark ? 'rgba(20, 251, 231, 0.8)' : 'rgba(215, 251, 231, 0.5)')
+  const hovering  = useRef(false)
+  const clicking  = useRef(false)
+  const rafId     = useRef<number>(0)
+
+  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => {
-      if (magnetElement) {
-        const rect = magnetElement.getBoundingClientRect()
-        const centerX = rect.left + rect.width / 2
-        const centerY = rect.top + rect.height / 2
-
-        // Calculate distance to center of element
-        const distX = centerX - e.clientX
-        const distY = centerY - e.clientY
-
-        // Apply magnetic pull (stronger as you get closer)
-        setPosition({
-          x: e.clientX + distX * magneticStrength,
-          y: e.clientY + distY * magneticStrength,
-        })
-      } else {
-        setPosition({ x: e.clientX, y: e.clientY })
-      }
-
-      if (!visible) setVisible(true)
+    const onMove = (e: MouseEvent) => {
+      mouse.current = { x: e.clientX, y: e.clientY }
+      setVisible(true)
     }
 
-    const onMouseDown = () => setIsClicking(true)
-    const onMouseUp = () => setIsClicking(false)
-    const onMouseEnter = () => setVisible(true)
-    const onMouseLeave = () => setVisible(false)
+    const onDown = () => {
+      clicking.current = true
+      applyStates()
+    }
+    const onUp = () => {
+      clicking.current = false
+      applyStates()
+    }
+    const onLeave = () => setVisible(false)
+    const onEnter = () => setVisible(true)
 
-    // Handle hovering over interactive elements
-    const handleElementMouseEnter = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      const isMagnetic = target.classList.contains('magnetic')
-
-      if (isMagnetic) {
-        setMagnetElement(target)
-      }
-
-      if (
-        target.tagName.toLowerCase() === 'a' ||
-        target.tagName.toLowerCase() === 'button' ||
-        target.closest('a') ||
-        target.closest('button') ||
-        target.role === 'button' ||
-        target.classList.contains('cursor-pointer')
-      ) {
-        setIsHovering(true)
+    const onOver = (e: MouseEvent) => {
+      const t = e.target as HTMLElement
+      const interactive =
+        t.tagName === 'A' ||
+        t.tagName === 'BUTTON' ||
+        !!t.closest('a') ||
+        !!t.closest('button') ||
+        t.classList.contains('cursor-pointer')
+      if (interactive !== hovering.current) {
+        hovering.current = interactive
+        applyStates()
       }
     }
 
-    const handleElementMouseLeave = () => {
-      setMagnetElement(null)
-      setIsHovering(false)
-    }
-
-    // Add event listeners
-    document.addEventListener('mousemove', onMouseMove)
-    document.addEventListener('mousedown', onMouseDown)
-    document.addEventListener('mouseup', onMouseUp)
-    document.addEventListener('mouseenter', onMouseEnter)
-    document.addEventListener('mouseleave', onMouseLeave)
-    document.addEventListener('mouseover', handleElementMouseEnter)
-    document.addEventListener('mouseout', handleElementMouseLeave)
-
-    // Hide default cursor
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('mouseup',   onUp)
+    document.addEventListener('mouseleave', onLeave)
+    document.addEventListener('mouseenter', onEnter)
+    document.addEventListener('mouseover',  onOver)
     document.documentElement.classList.add('custom-cursor')
 
-    return () => {
-      document.removeEventListener('mousemove', onMouseMove)
-      document.removeEventListener('mousedown', onMouseDown)
-      document.removeEventListener('mouseup', onMouseUp)
-      document.removeEventListener('mouseenter', onMouseEnter)
-      document.removeEventListener('mouseleave', onMouseLeave)
-      document.removeEventListener('mouseover', handleElementMouseEnter)
-      document.removeEventListener('mouseout', handleElementMouseLeave)
+    // RAF loop — lerp ring toward mouse each frame
+    const tick = () => {
+      ring.current.x += (mouse.current.x - ring.current.x) * LERP
+      ring.current.y += (mouse.current.y - ring.current.y) * LERP
 
-      // Restore default cursor
-      document.documentElement.classList.remove('custom-cursor')
+      if (dotRef.current) {
+        dotRef.current.style.transform =
+          `translate(${mouse.current.x}px, ${mouse.current.y}px) translate(-50%, -50%)`
+      }
+      if (ringRef.current) {
+        ringRef.current.style.transform =
+          `translate(${ring.current.x}px, ${ring.current.y}px) translate(-50%, -50%)`
+      }
+
+      rafId.current = requestAnimationFrame(tick)
     }
-  }, [visible, magnetElement, magneticStrength])
+    rafId.current = requestAnimationFrame(tick)
 
-  // Don't render on server
-  if (typeof window === 'undefined') return null
+    return () => {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('mouseup',   onUp)
+      document.removeEventListener('mouseleave', onLeave)
+      document.removeEventListener('mouseenter', onEnter)
+      document.removeEventListener('mouseover',  onOver)
+      document.documentElement.classList.remove('custom-cursor')
+      cancelAnimationFrame(rafId.current)
+    }
+  }, [])
+
+  // Apply scale classes directly via style to avoid re-renders
+  function applyStates() {
+    if (!dotRef.current || !ringRef.current) return
+    const h = hovering.current
+    const c = clicking.current
+
+    dotRef.current.style.width  = h ? '12px' : '6px'
+    dotRef.current.style.height = h ? '12px' : '6px'
+    dotRef.current.style.opacity = c ? '0.4' : '1'
+
+    ringRef.current.style.width   = h ? '52px' : '34px'
+    ringRef.current.style.height  = h ? '52px' : '34px'
+    ringRef.current.style.opacity = c ? '0.3' : h ? '0.6' : '0.45'
+  }
 
   return (
     <>
-      {/* Main cursor dot */}
+      {/* Sharp dot — snaps exactly to cursor */}
       <div
-        ref={cursorRef}
-        className="custom-cursor-element fixed top-0 left-0 rounded-full pointer-events-none z-50 transform -translate-x-1/2 -translate-y-1/2 mix-blend-difference transition-transform duration-150"
+        ref={dotRef}
+        data-cursor
+        className="fixed top-0 left-0 rounded-full pointer-events-none z-[9998]"
         style={{
-          backgroundColor: cursorColor,
-          width: size,
-          height: size,
+          width: 6,
+          height: 6,
           opacity: visible ? 1 : 0,
-          transform: `translate(${position.x}px, ${position.y}px) scale(${
-            isClicking ? 0.6 : isHovering ? 2 : 1
-          })`,
+          backgroundColor: 'var(--cursor-color, currentColor)',
+          transition: 'width 0.2s ease, height 0.2s ease, opacity 0.2s ease',
         }}
       />
 
-      {/* Cursor ring */}
+      {/* Lagging ring */}
       <div
         ref={ringRef}
-        className="custom-cursor-element fixed top-0 left-0 rounded-full border pointer-events-none z-40 transform -translate-x-1/2 -translate-y-1/2 mix-blend-difference transition-all duration-300 ease-out"
+        data-cursor
+        className="fixed top-0 left-0 rounded-full pointer-events-none z-[9997]"
         style={{
-          borderColor: cursorColor,
-          width: ringSize,
-          height: ringSize,
-          opacity: visible ? 0.5 : 0,
-          transform: `translate(${position.x}px, ${position.y}px) scale(${
-            isClicking ? 0.9 : isHovering ? 1.5 : 1
-          })`,
-          borderWidth: '1px',
+          width: 34,
+          height: 34,
+          opacity: visible ? 0.45 : 0,
+          border: '1px solid var(--cursor-color, currentColor)',
+          transition: 'width 0.25s ease, height 0.25s ease, opacity 0.2s ease',
         }}
       />
     </>
   )
 }
-
-export default AdvancedCursor

@@ -64,14 +64,14 @@ export const NavBar = () => {
 												buttonVariants({ variant: 'ghost', size: 'icon' }),
 												'size-12 relative',
 												pathname === item.href
-													? 'text-primary'
-													: 'text-foreground'
+													? 'text-foreground'
+													: 'text-foreground/40'
 											)}
 										>
 											<item.icon className="size-4" />
 											{pathname === item.href && (
 												<motion.span
-													className="absolute bottom-1.5 h-1 w-1 rounded-full bg-text-dark-custom"
+													className="absolute bottom-1.5 h-1 w-1 rounded-full bg-foreground"
 													layoutId="activeNavIndicator"
 												/>
 											)}

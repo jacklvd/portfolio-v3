@@ -192,13 +192,15 @@ img {
 		margin-bottom: var(--mb-3);
 	}
 
+	/* Restore native cursor on touch/small screens */
 	.custom-cursor,
 	.custom-cursor * {
 		cursor: auto !important;
 	}
 
 	/* Hide custom cursor elements on mobile */
-	.custom-cursor-element {
+	.custom-cursor-element,
+	[data-cursor] {
 		display: none !important;
 	}
 }
@@ -250,6 +252,8 @@ img {
 		--chart-3: 40 70% 50%;
 		--chart-4: 300 70% 50%;
 		--chart-5: 120 70% 50%;
+
+		--cursor-color: #1a1a1a;
 	}
 
 	.dark {
@@ -287,6 +291,8 @@ img {
 		--chart-3: 40 70% 60%;
 		--chart-4: 300 70% 60%;
 		--chart-5: 120 70% 60%;
+
+		--cursor-color: #e8e6e3;
 	}
 
 	/* Light theme retro enhancements */
