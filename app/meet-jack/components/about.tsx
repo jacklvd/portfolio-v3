@@ -46,15 +46,18 @@ export function About() {
             <p className="text-[0.6rem] tracking-[0.4em] uppercase text-muted-foreground mb-2">
               Currently listening
             </p>
-            <iframe
-              src="https://open.spotify.com/embed/track/7a86XRg84qjasly9f6bPSD?utm_source=generator&theme=0"
-              width="100%"
-              height="80"
-              allowFullScreen
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              loading="lazy"
-              className="border-none"
-            />
+            <div className="overflow-hidden rounded-xl">
+              <iframe
+                src="https://open.spotify.com/embed/track/7a86XRg84qjasly9f6bPSD?utm_source=generator&theme=0"
+                width="100%"
+                height="80"
+                allowFullScreen
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+                className="border-none block"
+                style={{ border: 'none' }}
+              />
+            </div>
           </div>
         </motion.div>
 

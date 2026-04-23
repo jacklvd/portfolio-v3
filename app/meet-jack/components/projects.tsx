@@ -54,7 +54,7 @@ const Project = () => {
         03 — Projects
       </motion.p>
       <motion.h2 {...inView(0.05)} className="font-serif text-4xl md:text-5xl text-foreground mb-12 md:mb-16">
-        Things I've built.
+        Things I&apos;ve built.
       </motion.h2>
 
       {isLoading ? (

@@ -66,7 +66,7 @@ const ExperienceSection: React.FC = () => {
         02 — Experience
       </motion.p>
       <motion.h2 {...inView(0.05)} className="font-serif text-4xl md:text-5xl text-foreground mb-12 md:mb-16">
-        Where I've worked.
+        Where I&apos;ve worked.
       </motion.h2>
 
       <motion.div {...inView(0.1)} className="flex flex-col md:flex-row gap-8 md:gap-0">
@@ -90,11 +90,10 @@ const ExperienceSection: React.FC = () => {
                     <button
                       key={exp._id}
                       onClick={() => { setSelectedId(exp._id); setDropdownOpen(false); }}
-                      className={`w-full text-left px-4 py-3 text-sm transition-colors ${
-                        selectedId === exp._id
+                      className={`w-full text-left px-4 py-3 text-sm transition-colors ${selectedId === exp._id
                           ? 'text-foreground bg-foreground/5'
                           : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
-                      }`}
+                        }`}
                     >
                       {exp.company}
                     </button>
@@ -108,11 +107,10 @@ const ExperienceSection: React.FC = () => {
                 <button
                   key={exp._id}
                   onClick={() => setSelectedId(exp._id)}
-                  className={`w-full text-left px-4 py-2.5 text-sm border-l-2 transition-all duration-150 ${
-                    selectedId === exp._id
+                  className={`w-full text-left px-4 py-2.5 text-sm border-l-2 transition-all duration-150 ${selectedId === exp._id
                       ? 'border-foreground text-foreground font-medium'
                       : 'border-transparent text-muted-foreground hover:text-foreground hover:border-foreground/30'
-                  }`}
+                    }`}
                 >
                   {exp.company}
                 </button>

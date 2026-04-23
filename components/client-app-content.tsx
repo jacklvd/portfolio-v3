@@ -5,6 +5,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { NavBar } from '@/components/layout/navbar'
 import Preloader from '@/components/loading/preloader'
+import { StarsBackground } from '@/components/stars-background'
 
 export default function ClientAppContent({
   children,
@@ -19,6 +20,7 @@ export default function ClientAppContent({
 
   return (
     <TooltipProvider delayDuration={0}>
+      <StarsBackground />
       {isMounted ? <AppLoader>{children}</AppLoader> : children}
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
