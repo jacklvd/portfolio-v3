@@ -13,7 +13,7 @@
 	--title-color: hsl(var(--hue), var(--sat) ., 20%);
 	--title-color-dark: hsl(var(--hue), var(--sat), 0%);
 	--text-color: hsl(var(--hue), var(--sat), 46%);
-	--body-color: hsl(var(--hue), var(--sat), 98%);
+	--body-color: #f5f0e8;
 	--custom-color: #f6f5f4;
 	--shadow-color: #d5d8d6;
 	--custom-box-color: #303036;
@@ -216,7 +216,7 @@ img {
 
 @layer base {
 	:root {
-		--background: 0 0% 100%;
+		--background: 36 44% 94%;
 		--foreground: 222.2 84% 4.9%;
 
 		--card: 0 0% 100%;
