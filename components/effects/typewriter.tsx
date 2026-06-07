@@ -4,7 +4,7 @@ import Typewriter from 'typewriter-effect'
 
 export const Writer: React.FC = () => {
   return (
-    <div className="text-[0.6rem] tracking-[0.4em] uppercase text-muted-foreground [&_.Typewriter\_\_cursor]:text-muted-foreground [&_.Typewriter\_\_cursor]:font-light">
+    <div className="font-hand text-2xl text-muted-foreground sm:text-3xl [&_.Typewriter\_\_cursor]:text-muted-foreground [&_.Typewriter\_\_cursor]:font-light">
       <Typewriter
         options={{
           loop: true,

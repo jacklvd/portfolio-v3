@@ -26,6 +26,10 @@ const DEFAULT_SIZE = 40
 const DEFAULT_MAGNIFICATION = 60
 const DEFAULT_DISTANCE = 140
 
+// Shared spring feel for every magnified value (width, glyph scale, lift) so the
+// icon and its container animate in lockstep rather than drifting apart.
+const SPRING = { mass: 0.1, stiffness: 150, damping: 12 }
+
 const dockVariants = cva(
   'supports-backdrop-blur:bg-white/10 supports-backdrop-blur:dark:bg-black/10 mx-auto mt-8 flex h-[58px] w-max items-center justify-center gap-2 rounded-2xl border p-2 backdrop-blur-md',
 )
@@ -115,23 +119,41 @@ const DockIcon = ({
     [size, magnification, size],
   )
 
-  const scaleSize = useSpring(sizeTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  })
+  // Grow the glyph in step with the container so a magnified icon reads as a
+  // bigger icon — not a tiny icon floating in a big circle.
+  const glyphTransform = useTransform(
+    distanceCalc,
+    [-distance, 0, distance],
+    [1, magnification / size, 1],
+  )
+
+  // A small upward hop as the icon passes under the cursor (macOS dock feel).
+  const liftTransform = useTransform(
+    distanceCalc,
+    [-distance, 0, distance],
+    [0, -size * 0.32, 0],
+  )
+
+  const scaleSize = useSpring(sizeTransform, SPRING)
+  const glyphScale = useSpring(glyphTransform, SPRING)
+  const lift = useSpring(liftTransform, SPRING)
 
   return (
     <motion.div
       ref={ref}
-      style={{ width: scaleSize, height: scaleSize, padding }}
+      style={{ width: scaleSize, height: scaleSize, padding, y: lift }}
       className={cn(
         'flex aspect-square cursor-pointer items-center justify-center rounded-full',
         className,
       )}
       {...props}
     >
-      {children}
+      <motion.div
+        style={{ scale: glyphScale }}
+        className="flex items-center justify-center"
+      >
+        {children}
+      </motion.div>
     </motion.div>
   )
 }

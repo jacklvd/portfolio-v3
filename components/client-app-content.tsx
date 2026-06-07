@@ -5,7 +5,8 @@ import { MotionConfig } from 'framer-motion'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { NavBar } from '@/components/layout/navbar'
-import Preloader from '@/components/loading/preloader'
+import PetLoader from '@/components/pet/pet-loader'
+import SitePet from '@/components/pet/site-pet'
 import { StarsBackground } from '@/components/stars-background'
 import { WavyFilterDefs } from '@/components/effects/wavy-frame'
 
@@ -30,6 +31,7 @@ export default function ClientAppContent({
           <ThemeToggle />
         </div>
         <NavBar />
+        <SitePet />
       </TooltipProvider>
     </MotionConfig>
   )
@@ -54,7 +56,7 @@ function AppLoader({ children }: { children: React.ReactNode }) {
     <>
       <Suspense fallback={null}>{children}</Suspense>
       {mounted && !preloaderDone && (
-        <Preloader onComplete={() => setPreloaderDone(true)} />
+        <PetLoader onComplete={() => setPreloaderDone(true)} />
       )}
     </>
   )

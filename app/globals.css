@@ -695,3 +695,96 @@ img {
 		border-color: #1e40af !important;
 	}
 }
+
+/* ── Site pet (ink-doodle companion) ─────────────────────────────────────── */
+.pet {
+	overflow: visible;
+}
+.pet-bob,
+.pet-eyes,
+.pet-pupils,
+.pet-leg,
+.pet-arm {
+	transform-box: fill-box;
+}
+.pet-bob {
+	transform-origin: 50% 100%;
+}
+.pet-eyes {
+	transform-origin: 50% 50%;
+}
+.pet-leg {
+	transform-origin: 50% 0%; /* pivot at the hip */
+}
+
+/* Pupils follow the cursor (parent sets --pet-eye-x / --pet-eye-y). */
+.pet-pupils {
+	transform: translate(var(--pet-eye-x, 0px), var(--pet-eye-y, 0px));
+	transition: transform 0.12s ease-out;
+}
+
+/* Blink: squash the eyes briefly. */
+.pet--blink .pet-eyes {
+	transform: scaleY(0.14);
+}
+
+/* Idle + walking: gentle vertical bob. */
+.pet--idle .pet-bob,
+.pet--walk .pet-bob {
+	animation: pet-bob 0.5s ease-in-out infinite;
+}
+
+/* Walking: alternating leg steps. */
+.pet--walk .pet-leg-l {
+	animation: pet-step 0.46s ease-in-out infinite;
+}
+.pet--walk .pet-leg-r {
+	animation: pet-step 0.46s ease-in-out infinite 0.23s;
+}
+
+/* Dragged: legs kick frantically. */
+.pet--drag .pet-leg-l {
+	animation: pet-kick 0.24s ease-in-out infinite alternate;
+}
+.pet--drag .pet-leg-r {
+	animation: pet-kick 0.24s ease-in-out infinite alternate 0.12s;
+}
+
+/* Dizzy: woozy sway + spinning eyes. */
+.pet--dizzy .pet-bob {
+	animation: pet-sway 0.6s ease-in-out infinite;
+}
+.pet--dizzy .pet-eyes {
+	animation: pet-spin 0.9s linear infinite;
+}
+
+@keyframes pet-bob {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-1.6px); }
+}
+@keyframes pet-step {
+	0%, 100% { transform: rotate(15deg); }
+	50% { transform: rotate(-15deg); }
+}
+@keyframes pet-kick {
+	0% { transform: rotate(22deg); }
+	100% { transform: rotate(-22deg); }
+}
+@keyframes pet-sway {
+	0%, 100% { transform: rotate(-6deg); }
+	50% { transform: rotate(6deg); }
+}
+@keyframes pet-spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pet,
+	.pet * {
+		animation: none !important;
+	}
+	.pet-pupils {
+		transition: none !important;
+	}
+}

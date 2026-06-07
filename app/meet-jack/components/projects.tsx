@@ -117,7 +117,7 @@ const Project = () => {
                 viewport={{ once: true, margin: '-60px' }}
               >
                 {regularWorks.map(work => (
-                  <motion.div key={work._id} variants={itemVariants} className="h-full">
+                  <motion.div key={work._id} variants={itemVariants} className="h-full" data-pet-ledge>
                     <WavyCard className="flex flex-col">
                       {/* Image */}
                       <div className="aspect-video overflow-hidden">

@@ -99,23 +99,17 @@ function NoteCard({
       className="group relative mb-4 break-inside-avoid"
     >
       <div
-        className={`relative ${style.paper} px-5 pb-5 pt-7 shadow-[3px_5px_14px_rgba(0,0,0,0.12)] ${
-          isLong ? 'cursor-pointer transition-transform hover:-translate-y-0.5' : ''
-        }`}
-        {...(isLong
-          ? {
-              role: 'button',
-              tabIndex: 0,
-              'aria-label': `Read the full note from ${note.name}`,
-              onClick: onOpen,
-              onKeyDown: (e: React.KeyboardEvent) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onOpen();
-                }
-              },
-            }
-          : {})}
+        role="button"
+        tabIndex={0}
+        aria-label={`Read the full note from ${note.name}`}
+        onClick={onOpen}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onOpen();
+          }
+        }}
+        className={`relative ${style.paper} cursor-pointer px-5 pb-5 pt-7 shadow-[3px_5px_14px_rgba(0,0,0,0.12)] transition-transform hover:-translate-y-0.5`}
       >
         <WavyBorder
           filterId="wavy-frame-sm"

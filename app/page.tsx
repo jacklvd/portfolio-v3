@@ -2,9 +2,12 @@
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { data } from '@/constants';
 import { Writer } from '@/components/effects/typewriter';
 import { Sticker } from '@/components/effects/sticker';
+import { CoverDoodles } from '@/components/effects/cover-doodles';
+import { WavyBorder, WavyButtonBorder, WavyDivider } from '@/components/effects/wavy-frame';
 
 const Scene = dynamic(() => import('@/components/effects/scene'), { ssr: false });
 
@@ -24,117 +27,137 @@ export default function Home() {
         <Scene />
       </div>
 
-      {/* Draggable stickers — hidden on mobile to avoid overlapping the hero */}
+      {/* Hand-drawn ink flourishes (moon, constellation, sparkles) */}
+      <CoverDoodles />
+
+      {/* Draggable paper scraps — hidden on mobile to avoid overlapping the hero */}
       <div className="hidden md:block">
-      <Sticker label="jv.meme" top="14%" left="33%" width={176}>
-        <div className="flex flex-col items-center justify-center px-5 py-6 gap-1">
-          <span className="font-serif italic text-4xl leading-none tracking-tight text-foreground">
-            Jack Vo
-          </span>
-          <span className="text-[0.5rem] tracking-[0.3em] uppercase text-muted-foreground font-light mt-1">
-            est. {new Date().getFullYear()}
-          </span>
-        </div>
-      </Sticker>
-
-      <Sticker label="currently.log" top="58%" left="22%" width={192}>
-        <div className="flex flex-col gap-2 px-4 py-4">
-          {[
-            { dot: 'bg-[#6fa89e]', text: 'Building cool things' },
-            { dot: 'bg-[#c4685a]', text: 'Drinking too much coffee' },
-            { dot: 'bg-[#a07896]', text: 'Looking for Pho' },
-          ].map(({ dot, text }) => (
-            <div key={text} className="flex items-center gap-2">
-              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
-              <span className="text-[0.6rem] tracking-wide text-foreground/70 font-light">{text}</span>
-            </div>
-          ))}
-        </div>
-      </Sticker>
-
-      <Sticker label="xin-chao.txt" top="12%" right="23%" width={168}>
-        <div className="flex flex-col items-center justify-center px-4 py-5 gap-2">
-          <span className="font-serif text-2xl text-foreground tracking-wide">Xin Chào</span>
-          <span className="text-[0.5rem] tracking-[0.25em] uppercase text-muted-foreground font-light text-center leading-relaxed">
-            Vietnamese · /sɪn tʃaʊ/
-          </span>
-          <span className="text-[0.55rem] text-muted-foreground/60 italic font-light">&ldquo;hello&rdquo;</span>
-        </div>
-      </Sticker>
-
-      <Sticker label="stack.json" top="42%" right="19%" width={180}>
-        <div className="flex flex-col gap-1.5 px-4 py-4">
-          {[
-            { label: 'Next.js', color: 'text-foreground' },
-            { label: 'TypeScript', color: 'text-[#6fa89e]' },
-            { label: 'React', color: 'text-[#a07896]' },
-            { label: 'Python', color: 'text-[#c4685a]' },
-            { label: 'Tailwind', color: 'text-foreground/50' },
-          ].map(({ label, color }) => (
-            <div key={label} className="flex items-center gap-2">
-              <span className="text-muted-foreground/40 text-[0.5rem]">▸</span>
-              <span className={`text-[0.6rem] tracking-wide font-light ${color}`}>{label}</span>
-            </div>
-          ))}
-        </div>
-      </Sticker>
-
-      <Sticker label="mood.wav" bottom="14%" right="29%" width={166}>
-        <div className="flex flex-col items-center justify-center px-4 py-5 gap-3">
-          <span className="text-3xl leading-none">🍜</span>
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-[0.6rem] tracking-[0.2em] uppercase text-foreground/70 font-light">
-              current mood
-            </span>
-            <span className="font-serif italic text-sm text-foreground">
-              always hungry
+        <Sticker label="hello" top="14%" left="32%" width={172} rotate={-4}>
+          <div className="flex flex-col items-center justify-center gap-1 px-5 py-5">
+            <span className="font-title text-4xl leading-none text-stone-800">Jack Vo</span>
+            <span className="mt-1 font-hand text-base text-stone-500">
+              est. {new Date().getFullYear()}
             </span>
           </div>
-        </div>
-      </Sticker>
+        </Sticker>
+
+        <Sticker label="now" top="58%" left="21%" width={196} rotate={3}>
+          <div className="flex flex-col gap-2 px-4 py-3">
+            {[
+              { dot: 'bg-[#6fa89e]', text: 'Building cool things' },
+              { dot: 'bg-[#c4685a]', text: 'Drinking too much coffee' },
+              { dot: 'bg-[#a07896]', text: 'Looking for Pho' },
+            ].map(({ dot, text }) => (
+              <div key={text} className="flex items-center gap-2">
+                <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
+                <span className="font-hand text-lg leading-tight text-stone-700">{text}</span>
+              </div>
+            ))}
+          </div>
+        </Sticker>
+
+        <Sticker label="xin chào" top="12%" right="22%" width={170} rotate={4}>
+          <div className="flex flex-col items-center justify-center gap-1.5 px-4 py-4">
+            <span className="font-title text-3xl text-stone-800">Xin Chào</span>
+            <span className="text-center font-hand text-base leading-snug text-stone-500">
+              Vietnamese · /sɪn tʃaʊ/
+            </span>
+            <span className="font-hand text-base italic text-stone-400">&ldquo;hello&rdquo;</span>
+          </div>
+        </Sticker>
+
+        <Sticker label="my stack" top="42%" right="18%" width={184} rotate={-3}>
+          <div className="flex flex-col gap-1 px-4 py-3">
+            {[
+              { label: 'Next.js', color: 'text-stone-800' },
+              { label: 'TypeScript', color: 'text-[#3d7d72]' },
+              { label: 'React', color: 'text-[#8a5f7d]' },
+              { label: 'Python', color: 'text-[#b1503f]' },
+              { label: 'Tailwind', color: 'text-stone-500' },
+            ].map(({ label, color }) => (
+              <div key={label} className="flex items-center gap-2">
+                <span className="text-stone-400">✦</span>
+                <span className={`font-hand text-lg leading-tight ${color}`}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </Sticker>
+
+        <Sticker label="always hungry" bottom="13%" right="28%" width={168} rotate={5}>
+          <div className="flex flex-col items-center justify-center gap-2 px-4 py-4">
+            <span className="text-3xl leading-none">🍜</span>
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="font-hand text-sm uppercase tracking-[0.15em] text-stone-500">
+                current mood
+              </span>
+              <span className="font-title text-2xl text-stone-800">always hungry</span>
+            </div>
+          </div>
+        </Sticker>
       </div>
 
-      {/* Hero text */}
-      <main className="relative z-10 pointer-events-none flex min-h-screen flex-col items-center justify-center px-6 pb-28">
-        <div className="flex flex-col items-center text-center gap-5">
-          <motion.p
-            {...fadeUp(0)}
-            className="text-[0.6rem] tracking-[0.45em] uppercase text-muted-foreground font-light"
-          >
-            Xin Chào, I&apos;m
-          </motion.p>
+      {/* Hero — the book's title page */}
+      <main className="pointer-events-none relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pb-28">
+        <motion.div {...fadeUp(0)} className="group relative px-8 py-10 sm:px-16 sm:py-14">
+          {/* Ornamental wavy cover frame */}
+          <WavyBorder className="rounded-[2rem] border border-foreground/25" />
 
-          <motion.h1
-            {...fadeUp(0.18)}
-            className="font-serif text-[clamp(3.5rem,13vw,9.5rem)] leading-[0.9] tracking-tight text-foreground"
-          >
-            Jack Vo
-          </motion.h1>
+          <div className="relative flex flex-col items-center gap-5 text-center">
+            <motion.p
+              {...fadeUp(0.12)}
+              className="font-hand text-2xl text-muted-foreground"
+            >
+              Xin Chào, I&apos;m
+            </motion.p>
 
-          <motion.div {...fadeUp(0.36)}>
-            <Writer />
-          </motion.div>
+            <motion.h1
+              {...fadeUp(0.22)}
+              data-pet-ledge
+              className="font-title text-[clamp(4rem,14vw,10rem)] leading-[0.85] text-foreground"
+            >
+              Jack Vo
+            </motion.h1>
 
-          <motion.div
-            {...fadeUp(0.54)}
-            className="flex items-center gap-7 mt-3 pointer-events-auto"
-          >
-            {socials.map(([name, social]) => {
-              const isEmail = social.url.startsWith('mailto:');
-              return (
-                <Link
-                  key={name}
-                  href={social.url}
-                  {...(!isEmail && { target: '_blank', rel: 'noopener noreferrer' })}
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-300"
-                  aria-label={name}
-                >
-                  <social.icon className="size-[18px]" />
-                </Link>
-              );
-            })}
-          </motion.div>
-        </div>
+            <motion.div {...fadeUp(0.34)} className="w-44 text-foreground/30">
+              <WavyDivider />
+            </motion.div>
+
+            <motion.div {...fadeUp(0.44)}>
+              <Writer />
+            </motion.div>
+
+            <motion.div {...fadeUp(0.56)} className="pointer-events-auto mt-3">
+              <Link
+                href="/meet-jack"
+                className="group/btn relative inline-flex items-center gap-2.5 px-7 py-3 font-hand text-xl text-foreground
+                  transition-transform duration-100 hover:translate-x-[2px] hover:translate-y-[2px]"
+              >
+                <WavyButtonBorder />
+                <span className="relative flex items-center gap-2">
+                  Open the book
+                  <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
+                </span>
+              </Link>
+            </motion.div>
+
+            <motion.div {...fadeUp(0.68)} className="pointer-events-auto mt-4 flex items-center gap-7">
+              {socials.map(([name, social]) => {
+                const isEmail = social.url.startsWith('mailto:');
+                return (
+                  <Link
+                    key={name}
+                    href={social.url}
+                    {...(!isEmail && { target: '_blank', rel: 'noopener noreferrer' })}
+                    className="text-muted-foreground transition-colors duration-300 hover:text-foreground"
+                    aria-label={name}
+                  >
+                    <social.icon className="size-[18px]" />
+                  </Link>
+                );
+              })}
+            </motion.div>
+          </div>
+        </motion.div>
       </main>
     </div>
   );

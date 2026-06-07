@@ -8,6 +8,7 @@ import Project from './components/projects';
 import { PublicationsSection } from './components/publications';
 import { Guestbook } from './components/contact';
 import { SectionNav } from './components/section-nav';
+import { CoverDoodles } from '@/components/effects/cover-doodles';
 import { WavyBorder } from '@/components/effects/wavy-frame';
 import { ChevronUp } from 'lucide-react';
 import { useLoading } from '@/context/loading-context';
@@ -83,6 +84,7 @@ export default function Portfolio() {
 	return (
 		<ErrorBoundary>
 			<div className="min-h-screen flex flex-col">
+				<CoverDoodles fixed />
 				<SectionNav />
 				{/* Main content */}
 				<main className="flex-1">
