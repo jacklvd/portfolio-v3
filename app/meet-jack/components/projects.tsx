@@ -4,6 +4,7 @@ import { client, urlFor } from '@/client/client';
 import { motion } from 'framer-motion';
 import { GitBranch, ExternalLink } from 'lucide-react';
 import BentoCard from '@/components/magicui/bento-card';
+import { WavyCard, WavyButtonBorder, WavyDivider } from '@/components/effects/wavy-frame';
 import Image from 'next/image';
 
 const inView = (delay = 0) => ({
@@ -53,7 +54,7 @@ const Project = () => {
       <motion.p {...inView(0)} className="text-[0.6rem] tracking-[0.4em] uppercase text-muted-foreground mb-3">
         03 — Projects
       </motion.p>
-      <motion.h2 {...inView(0.05)} className="font-serif text-4xl md:text-5xl text-foreground mb-12 md:mb-16">
+      <motion.h2 {...inView(0.05)} className="font-title text-5xl md:text-6xl text-foreground mb-12 md:mb-16">
         Things I&apos;ve built.
       </motion.h2>
 
@@ -107,7 +108,7 @@ const Project = () => {
               >
                 {regularWorks.map(work => (
                   <motion.div key={work._id} variants={itemVariants} className="h-full">
-                    <div className="border border-foreground/10 h-full flex flex-col group hover:border-foreground/30 transition-colors duration-300 overflow-hidden">
+                    <WavyCard className="flex flex-col">
                       {/* Image */}
                       <div className="aspect-video overflow-hidden">
                         <Image
@@ -171,7 +172,7 @@ const Project = () => {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </WavyCard>
                   </motion.div>
                 ))}
               </motion.div>
@@ -179,19 +180,18 @@ const Project = () => {
           )}
 
           {/* GitHub CTA */}
-          <div className="pt-4 border-t border-foreground/10 flex items-center justify-between">
+          <WavyDivider className="mb-4" />
+          <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">More on GitHub</p>
             <a
               href="https://github.com/jacklvd"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2.5 px-5 py-3 text-xs font-medium
-                border border-foreground
-                shadow-[4px_4px_#121212] dark:shadow-[4px_4px_#e5e5e5]
+              className="group relative inline-flex items-center gap-2.5 px-5 py-3 text-xs font-medium
                 hover:translate-x-[3px] hover:translate-y-[3px]
-                hover:shadow-[1px_1px_#121212] dark:hover:shadow-[1px_1px_#e5e5e5]
                 transition-all duration-100 tracking-[0.2em] uppercase"
             >
+              <WavyButtonBorder />
               <GitBranch size={13} />
               View all
             </a>

@@ -1,6 +1,6 @@
 'use client';
 import { Github, Linkedin, Mail } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { WavyDivider } from '@/components/effects/wavy-frame';
 
 export default function Footer() {
 	const socialLinks = [
@@ -24,11 +24,11 @@ export default function Footer() {
 	return (
 		<footer className="w-full py-12 px-4">
 			<div className="container mx-auto">
-				<Separator className="mb-8" />
+				<WavyDivider className="mb-8" />
 
 				<div className="flex flex-col md:flex-row justify-between items-center gap-6">
 					<div className="flex flex-col items-center md:items-start gap-2">
-						<h3 className="font-medium text-lg">Jack Vo</h3>
+						<h3 className="font-title text-3xl leading-none">Jack Vo</h3>
 						<p className="text-sm text-muted-foreground max-w-md text-center md:text-left">
 							A SWE, passionate about solving real world problems
 							<br />

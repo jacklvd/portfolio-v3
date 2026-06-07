@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, BookOpen } from 'lucide-react';
 import Link from 'next/link';
+import { WavyBorder, WavyButtonBorder, WavyDivider } from '@/components/effects/wavy-frame';
 
 interface Publication {
   title: string;
@@ -56,21 +57,22 @@ export const PublicationsSection = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.05 }}
-        className="font-serif text-4xl md:text-5xl text-foreground mb-12 md:mb-16"
+        className="font-title text-5xl md:text-6xl text-foreground mb-12 md:mb-16"
       >
         Publications.
       </motion.h2>
 
       <div className="space-y-0">
         {publications.map((pub, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay: index * 0.08 }}
-            className="group border-t border-foreground/10 py-8 last:border-b"
-          >
+          <React.Fragment key={index}>
+            <WavyDivider />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay: index * 0.08 }}
+              className="group py-8"
+            >
             <div className="grid grid-cols-1 md:grid-cols-[3rem_1fr_auto] gap-4 md:gap-8 items-start">
               {/* Index */}
               <span className="text-[0.65rem] tracking-[0.3em] text-muted-foreground/50 pt-1 hidden md:block">
@@ -83,7 +85,8 @@ export const PublicationsSection = () => {
                   <h3 className="font-serif text-lg md:text-xl text-foreground leading-snug group-hover:text-foreground/80 transition-colors">
                     {pub.title}
                   </h3>
-                  <span className="shrink-0 text-[0.6rem] tracking-[0.2em] uppercase border border-foreground/20 px-2 py-0.5 text-muted-foreground mt-1">
+                  <span className="relative inline-block shrink-0 text-[0.6rem] tracking-[0.2em] uppercase px-2 py-0.5 text-muted-foreground mt-1">
+                    <WavyBorder filterId="wavy-frame-sm" className="border border-foreground/25" />
                     {pub.year}
                   </span>
                 </div>
@@ -104,24 +107,25 @@ export const PublicationsSection = () => {
                 </Link>
               </div>
             </div>
-          </motion.div>
+            </motion.div>
+          </React.Fragment>
         ))}
+        <WavyDivider />
       </div>
 
       {/* Scholar CTA */}
-      <div className="mt-12 pt-8 border-t border-foreground/10 flex items-center justify-between">
+      <WavyDivider className="mt-12 mb-8" />
+      <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">Full publication history</p>
         <Link
           href="https://scholar.google.com/citations?user=Ls-8CAoAAAAJ&hl=en"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2.5 px-5 py-3 text-xs font-medium
-            border border-foreground
-            shadow-[4px_4px_#121212] dark:shadow-[4px_4px_#e5e5e5]
+          className="group relative inline-flex items-center gap-2.5 px-5 py-3 text-xs font-medium
             hover:translate-x-[3px] hover:translate-y-[3px]
-            hover:shadow-[1px_1px_#121212] dark:hover:shadow-[1px_1px_#e5e5e5]
             transition-all duration-100 tracking-[0.2em] uppercase"
         >
+          <WavyButtonBorder />
           <BookOpen size={13} />
           Google Scholar
         </Link>

@@ -2,9 +2,10 @@
 'use client';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, ChevronDown } from 'lucide-react';
+import { FileText, ChevronDown, Sparkles, Star } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { WavyBorder, WavyButtonBorder, WavyDivider } from '@/components/effects/wavy-frame';
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -19,6 +20,16 @@ const inView = (delay = 0) => ({
   transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay },
 });
 
+// Sparkles that pop around the photo on hover. Full class strings are kept
+// literal so Tailwind's JIT picks them up (no runtime-built class names).
+const sparkles = [
+  { Icon: Sparkles, pos: '-top-3 -left-3', color: 'text-[#6fa89e]', hover: 'motion-safe:group-hover:-rotate-12', size: 26, delay: 0 },
+  { Icon: Star, pos: 'top-7 -right-4', color: 'text-[#a07896]', hover: 'motion-safe:group-hover:rotate-12', size: 16, delay: 70 },
+  { Icon: Sparkles, pos: '-bottom-3 right-8', color: 'text-[#c4685a]', hover: 'motion-safe:group-hover:rotate-6', size: 22, delay: 130 },
+  { Icon: Star, pos: 'bottom-14 -left-4', color: 'text-foreground', hover: 'motion-safe:group-hover:-rotate-6', size: 13, delay: 190 },
+  { Icon: Sparkles, pos: 'top-1/2 -right-5', color: 'text-[#6fa89e]', hover: 'motion-safe:group-hover:rotate-3', size: 15, delay: 250 },
+] as const;
+
 export function About() {
   const [expanded, setExpanded] = useState(false);
 
@@ -27,20 +38,42 @@ export function About() {
       <motion.p {...fadeUp(0)} className="text-[0.6rem] tracking-[0.4em] uppercase text-muted-foreground mb-3">
         01 — About
       </motion.p>
-      <motion.h2 {...fadeUp(0.05)} className="font-serif text-4xl md:text-5xl text-foreground mb-12 md:mb-16">
+      <motion.h2 {...fadeUp(0.05)} className="font-title text-5xl md:text-6xl text-foreground mb-12 md:mb-16">
         Hi, I'm Jack.
       </motion.h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-14 lg:gap-20">
         {/* Photo + Spotify */}
         <motion.div {...inView(0.1)} className="lg:col-span-2 flex flex-col gap-6">
-          <div className="relative aspect-[3/4] overflow-hidden shadow-[12px_12px_0_#e0e0e0] dark:shadow-[12px_12px_0_rgba(255,255,255,0.07)]">
-            <Image
-              src="/images/hero.jpeg"
-              alt="Jack Vo"
-              fill
-              className="object-cover grayscale hover:grayscale-0 transition-all duration-700"
-            />
+          <div className="group relative aspect-[3/4] p-2">
+            <WavyBorder className="rounded-[1.4rem] border border-foreground/30 shadow-[12px_12px_0_#e0e0e0] dark:shadow-[12px_12px_0_rgba(255,255,255,0.07)] transition-colors duration-300 group-hover:border-foreground/50" />
+            <div className="relative h-full w-full overflow-hidden rounded-[0.85rem]">
+              <Image
+                src="/images/hero.jpeg"
+                alt="Jack Vo"
+                fill
+                className="object-cover transition-all duration-500 ease-out
+                  group-hover:saturate-[1.2] group-hover:brightness-[1.04]
+                  motion-safe:group-hover:scale-[1.06] motion-safe:group-hover:-rotate-1"
+              />
+            </div>
+
+            {/* Magic pop: sparkles burst out around the photo on hover */}
+            <div aria-hidden className="pointer-events-none absolute inset-0 z-10">
+              {sparkles.map(({ Icon, pos, color, hover, size, delay }, i) => (
+                <span
+                  key={i}
+                  style={{ transitionDelay: `${delay}ms` }}
+                  className={`absolute ${pos} ${color} ${hover} scale-0 opacity-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-100 group-hover:opacity-100`}
+                >
+                  <Icon
+                    size={size}
+                    strokeWidth={1.5}
+                    className="fill-current drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]"
+                  />
+                </span>
+              ))}
+            </div>
           </div>
           <div>
             <p className="text-[0.6rem] tracking-[0.4em] uppercase text-muted-foreground mb-2">
@@ -102,18 +135,17 @@ export function About() {
             </button>
           </div>
 
-          <div className="mt-10 pt-8 border-t border-foreground/10">
+          <WavyDivider className="mt-10 mb-8" />
+          <div>
             <Link
               href="https://drive.google.com/file/d/1CdnQUi06RV0N5SsTCVBkHaKUuiUTG6BG/view?usp=sharing"
-              className="inline-flex items-center gap-2.5 px-5 py-3 text-xs font-medium
-                border border-foreground
-                shadow-[4px_4px_#121212] dark:shadow-[4px_4px_#e5e5e5]
+              className="group relative inline-flex items-center gap-2.5 px-5 py-3 text-xs font-medium
                 hover:translate-x-[3px] hover:translate-y-[3px]
-                hover:shadow-[1px_1px_#121212] dark:hover:shadow-[1px_1px_#e5e5e5]
                 transition-all duration-100 tracking-[0.2em] uppercase"
               target="_blank"
               rel="noopener noreferrer"
             >
+              <WavyButtonBorder />
               <FileText className="h-3.5 w-3.5" />
               Download CV
             </Link>

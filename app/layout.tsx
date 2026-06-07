@@ -1,17 +1,37 @@
 // app/layout.tsx
 import type { Metadata } from 'next'
-import { Inter, DM_Serif_Display } from 'next/font/google'
+import { Newsreader, Fraunces, Dancing_Script } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import { LoadingProvider } from '@/context/loading-context'
 import { CursorProvider } from '@/components/cursor/cursor-provider'
 import ClientAppContent from '@/components/client-app-content'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const dmSerif = DM_Serif_Display({
-  weight: '400',
+// Body: a literary serif designed for on-screen reading.
+const newsreader = Newsreader({
   subsets: ['latin'],
-  variable: '--font-dm-serif',
+  weight: ['300', '400', '500', '600'],
+  style: ['normal', 'italic'],
+  variable: '--font-body',
+  display: 'swap',
+})
+// Display: an old-style soft serif with bookish character for headings.
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-display',
+  display: 'swap',
+})
+
+// Section titles — a flowing script (Tiffanka-style). To try another, swap the
+// import + this call. Note the others are single-weight, so use weight ['400']:
+//   Parisienne · Kaushan_Script · Great_Vibes   (all from next/font/google)
+const titleFont = Dancing_Script({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-title',
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -69,6 +89,37 @@ export const metadata: Metadata = {
   },
 }
 
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Jack Vo',
+  alternateName: 'Long Vo',
+  url: 'https://jackvd.com',
+  image: 'https://jackvd.com/images/hero.jpeg',
+  jobTitle: 'Software Engineer',
+  description:
+    'Jack Vo is a Software Engineer passionate about solving real-world problems and building community-driven applications.',
+  alumniOf: {
+    '@type': 'CollegeOrUniversity',
+    name: 'Northeastern University',
+  },
+  knowsAbout: [
+    'Software Engineering',
+    'Full Stack Development',
+    'Next.js',
+    'React',
+    'TypeScript',
+    'Python',
+    'Machine Learning',
+  ],
+  sameAs: [
+    'https://github.com/jacklvd',
+    'https://www.linkedin.com/in/itsmejack/',
+    'https://scholar.google.com/citations?user=Ls-8CAoAAAAJ&hl=en',
+    'https://blog.jackvd.com/',
+  ],
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -76,7 +127,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${dmSerif.variable} font-sans`}>
+      <body
+        className={`${newsreader.variable} ${fraunces.variable} ${titleFont.variable} font-sans`}
+      >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <LoadingProvider>
             <CursorProvider>

@@ -1,5 +1,6 @@
 import { urlFor } from '@/client/client';
 import { GitBranch, ExternalLink } from 'lucide-react';
+import { WavyCard } from '@/components/effects/wavy-frame';
 
 const BentoCard = ({
   work,
@@ -77,7 +78,7 @@ const BentoCard = ({
   /* ── Large card: full-bleed image + gradient overlay ── */
   if (size === 'large') {
     return (
-      <div className="group relative h-full overflow-hidden border border-foreground/10 hover:border-foreground/30 transition-colors duration-300">
+      <WavyCard>
         {/* Image */}
         <img
           src={urlFor(work.image).width(900).url()}
@@ -97,14 +98,14 @@ const BentoCard = ({
             <Links />
           </div>
         </div>
-      </div>
+      </WavyCard>
     );
   }
 
   /* ── Medium card: image left, content right ── */
   if (size === 'medium') {
     return (
-      <div className="group h-full border border-foreground/10 hover:border-foreground/30 transition-colors duration-300 flex overflow-hidden">
+      <WavyCard className="flex">
         <div className="w-2/5 shrink-0 overflow-hidden">
           <img
             src={urlFor(work.image).width(600).url()}
@@ -123,13 +124,13 @@ const BentoCard = ({
             <Links />
           </div>
         </div>
-      </div>
+      </WavyCard>
     );
   }
 
   /* ── Small card: image top, content below ── */
   return (
-    <div className="group h-full border border-foreground/10 hover:border-foreground/30 transition-colors duration-300 flex flex-col overflow-hidden">
+    <WavyCard className="flex flex-col">
       <div className="aspect-video overflow-hidden">
         <img
           src={urlFor(work.image).width(500).url()}
@@ -144,7 +145,7 @@ const BentoCard = ({
         <Tags />
         <Links />
       </div>
-    </div>
+    </WavyCard>
   );
 };
 

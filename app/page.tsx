@@ -24,7 +24,8 @@ export default function Home() {
         <Scene />
       </div>
 
-      {/* Draggable stickers */}
+      {/* Draggable stickers — hidden on mobile to avoid overlapping the hero */}
+      <div className="hidden md:block">
       <Sticker label="jv.meme" top="14%" left="33%" width={176}>
         <div className="flex flex-col items-center justify-center px-5 py-6 gap-1">
           <span className="font-serif italic text-4xl leading-none tracking-tight text-foreground">
@@ -91,6 +92,7 @@ export default function Home() {
           </div>
         </div>
       </Sticker>
+      </div>
 
       {/* Hero text */}
       <main className="relative z-10 pointer-events-none flex min-h-screen flex-col items-center justify-center px-6 pb-28">

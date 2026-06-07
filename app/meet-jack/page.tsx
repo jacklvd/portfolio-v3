@@ -6,6 +6,8 @@ import ExperienceSection from './components/experience';
 import Footer from '../../components/layout/footer';
 import Project from './components/projects';
 import { PublicationsSection } from './components/publications';
+import { SectionNav } from './components/section-nav';
+import { WavyBorder } from '@/components/effects/wavy-frame';
 import { ChevronUp } from 'lucide-react';
 import { useLoading } from '@/context/loading-context';
 import SkeletonLoading from '@/components/loading/skeletonloading';
@@ -80,6 +82,7 @@ export default function Portfolio() {
 	return (
 		<ErrorBoundary>
 			<div className="min-h-screen flex flex-col">
+				<SectionNav />
 				{/* Main content */}
 				<main className="flex-1">
 					<div className="w-full max-w-6xl mx-auto px-6 sm:px-10 md:px-16">
@@ -97,10 +100,14 @@ export default function Portfolio() {
 				{showScrollTop && (
 					<button
 						onClick={scrollToTop}
-						className="fixed bottom-6 right-6 z-50 hidden sm:flex items-center justify-center w-9 h-9 border border-foreground/20 bg-background hover:border-foreground/50 transition-colors"
+						className="group fixed bottom-6 right-6 z-50 hidden sm:flex items-center justify-center w-9 h-9 bg-background transition-colors"
 						aria-label="Scroll to top"
 					>
-						<ChevronUp size={14} className="text-foreground/60" />
+						<WavyBorder
+							filterId="wavy-frame-sm"
+							className="border border-foreground/25 transition-colors duration-300 group-hover:border-foreground/50"
+						/>
+						<ChevronUp size={14} className="relative text-foreground/60" />
 					</button>
 				)}
 			</div>

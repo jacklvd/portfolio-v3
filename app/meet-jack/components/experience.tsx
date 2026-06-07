@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { client } from '@/client/client';
 import { ChevronDown, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { WavyBorder } from '@/components/effects/wavy-frame';
 
 interface Experience {
   _id: string;
@@ -65,7 +66,7 @@ const ExperienceSection: React.FC = () => {
       <motion.p {...inView(0)} className="text-[0.6rem] tracking-[0.4em] uppercase text-muted-foreground mb-3">
         02 — Experience
       </motion.p>
-      <motion.h2 {...inView(0.05)} className="font-serif text-4xl md:text-5xl text-foreground mb-12 md:mb-16">
+      <motion.h2 {...inView(0.05)} className="font-title text-5xl md:text-6xl text-foreground mb-12 md:mb-16">
         Where I&apos;ve worked.
       </motion.h2>
 
@@ -76,8 +77,12 @@ const ExperienceSection: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setDropdownOpen(!isDropdownOpen)}
-                className="w-full flex items-center justify-between px-4 py-3 border border-foreground/20 text-sm text-foreground hover:border-foreground/50 transition-colors"
+                className="group relative w-full flex items-center justify-between px-4 py-3 text-sm text-foreground transition-colors"
               >
+                <WavyBorder
+                  filterId="wavy-frame-sm"
+                  className="border border-foreground/25 transition-colors duration-300 group-hover:border-foreground/50"
+                />
                 <span>{selected?.company}</span>
                 <ChevronDown
                   size={14}

@@ -14,8 +14,11 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        serif: ['var(--font-dm-serif)', 'Georgia', 'serif'],
+        // Whole site reads like a book: serif body + display serif headings.
+        sans: ['var(--font-body)', 'Georgia', 'Cambria', 'serif'],
+        serif: ['var(--font-display)', 'Georgia', 'serif'],
+        // Flowing script for section titles (falls back to the display serif).
+        title: ['var(--font-title)', 'var(--font-display)', 'cursive'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

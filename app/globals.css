@@ -2,15 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300&family=Noto+Serif+Display:wght@200&family=Open+Sans&family=Playfair+Display&family=Poppins:wght@400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+/* Fonts are loaded via next/font in app/layout.tsx (Inter + DM Serif Display).
+   The previous render-blocking Google Fonts @imports were unused and removed. */
 
 :root {
 	--header-height: 3rem;
 
 	--hue: 0;
 	--sat: 0%;
-	--title-color: hsl(var(--hue), var(--sat) ., 20%);
+	--title-color: hsl(var(--hue), var(--sat), 20%);
 	--title-color-dark: hsl(var(--hue), var(--sat), 0%);
 	--text-color: hsl(var(--hue), var(--sat), 46%);
 	--body-color: #f5f0e8;

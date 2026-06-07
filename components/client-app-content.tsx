@@ -1,11 +1,13 @@
 // components/client-app-content.tsx
 'use client'
 import { useEffect, useState, Suspense } from 'react'
+import { MotionConfig } from 'framer-motion'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { NavBar } from '@/components/layout/navbar'
 import Preloader from '@/components/loading/preloader'
 import { StarsBackground } from '@/components/stars-background'
+import { WavyFilterDefs } from '@/components/effects/wavy-frame'
 
 export default function ClientAppContent({
   children,
@@ -19,14 +21,17 @@ export default function ClientAppContent({
   }, [])
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <StarsBackground />
-      {isMounted ? <AppLoader>{children}</AppLoader> : children}
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
-      <NavBar />
-    </TooltipProvider>
+    <MotionConfig reducedMotion="user">
+      <TooltipProvider delayDuration={0}>
+        <WavyFilterDefs />
+        <StarsBackground />
+        {isMounted ? <AppLoader>{children}</AppLoader> : children}
+        <div className="fixed top-4 right-4 z-50">
+          <ThemeToggle />
+        </div>
+        <NavBar />
+      </TooltipProvider>
+    </MotionConfig>
   )
 }
 
