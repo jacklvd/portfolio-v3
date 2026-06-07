@@ -9,6 +9,7 @@ const config: Config = {
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './lib/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   darkMode: ['class'],
   theme: {
@@ -19,6 +20,12 @@ const config: Config = {
         serif: ['var(--font-display)', 'Georgia', 'serif'],
         // Flowing script for section titles (falls back to the display serif).
         title: ['var(--font-title)', 'var(--font-display)', 'cursive'],
+        // Casual handwriting for guestbook notes.
+        hand: ['var(--font-hand)', 'cursive'],
+      },
+      transitionTimingFunction: {
+        // Springy "pop" easing used for the sparkle hover burst.
+        'spring-pop': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

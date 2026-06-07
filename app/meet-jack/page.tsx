@@ -6,6 +6,7 @@ import ExperienceSection from './components/experience';
 import Footer from '../../components/layout/footer';
 import Project from './components/projects';
 import { PublicationsSection } from './components/publications';
+import { Guestbook } from './components/contact';
 import { SectionNav } from './components/section-nav';
 import { WavyBorder } from '@/components/effects/wavy-frame';
 import { ChevronUp } from 'lucide-react';
@@ -90,7 +91,7 @@ export default function Portfolio() {
 						<ExperienceSection />
 						<Project />
 						<PublicationsSection />
-						{/* <ContactSection /> */}
+						<Guestbook />
 					</div>
 				</main>
 

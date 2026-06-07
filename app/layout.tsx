@@ -1,6 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from 'next'
-import { Newsreader, Fraunces, Dancing_Script } from 'next/font/google'
+import { Newsreader, Fraunces, Dancing_Script, Caveat } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import { LoadingProvider } from '@/context/loading-context'
@@ -14,6 +14,11 @@ const newsreader = Newsreader({
   style: ['normal', 'italic'],
   variable: '--font-body',
   display: 'swap',
+  // next/font lacks fallback-metric overrides for Newsreader (Next 14.2.x),
+  // which throws "Failed to find font override values" at build. Provide an
+  // explicit fallback and skip the automatic metric adjustment.
+  adjustFontFallback: false,
+  fallback: ['Georgia', 'Cambria', 'serif'],
 })
 // Display: an old-style soft serif with bookish character for headings.
 const fraunces = Fraunces({
@@ -31,6 +36,14 @@ const titleFont = Dancing_Script({
   subsets: ['latin'],
   weight: ['500', '600', '700'],
   variable: '--font-title',
+  display: 'swap',
+})
+
+// Casual handwriting for guestbook notes — looks like ballpoint on paper.
+const handFont = Caveat({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-hand',
   display: 'swap',
 })
 
@@ -128,7 +141,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${newsreader.variable} ${fraunces.variable} ${titleFont.variable} font-sans`}
+        className={`${newsreader.variable} ${fraunces.variable} ${titleFont.variable} ${handFont.variable} font-sans`}
       >
         <script
           type="application/ld+json"

@@ -1,280 +1,345 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { motion } from 'framer-motion';
-import { Send, Mail, Github, Linkedin } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Send, Mail, Github, Linkedin, Check } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
+import { WavyBorder, WavyButtonBorder, WavyDivider } from '@/components/effects/wavy-frame';
+import {
+  NOTE_COLORS,
+  DEFAULT_NOTE_COLOR,
+  NOTE_COLOR_STYLES,
+  type NoteColor,
+} from '@/lib/guestbook/colors';
+
+interface Note {
+  name: string;
+  message: string;
+  color: NoteColor;
+  createdAt: string;
+}
+
+const SIGNED_KEY = 'guestbook-signed';
+
+// TODO(jack): confirm these contact links. GitHub + LinkedIn are pulled from the
+// site's JSON-LD; the email is your Northeastern address — swap to a preferred
+// public address if you'd rather.
+const socialLinks = [
+  { name: 'Email', icon: Mail, href: 'mailto:vo.lo@northeastern.edu', label: 'vo.lo@northeastern.edu' },
+  { name: 'GitHub', icon: Github, href: 'https://github.com/jacklvd', label: 'github.com/jacklvd' },
+  { name: 'LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com/in/itsmejack/', label: 'in/itsmejack' },
+];
+
+// Deterministic gentle rotation per card (index-based) so notes look pinned by
+// hand without re-randomizing on every render or mismatching on hydration.
+const ROTATIONS = ['-2deg', '1.5deg', '-1deg', '2deg', '-1.5deg', '1deg'];
+const rotationFor = (i: number) => ROTATIONS[i % ROTATIONS.length];
 
 const formSchema = z.object({
-	name: z.string().min(2, {
-		message: 'Name must be at least 2 characters.',
-	}),
-	email: z.string().email({
-		message: 'Please enter a valid email address.',
-	}),
-	message: z.string().min(10, {
-		message: 'Message must be at least 10 characters.',
-	}),
+  name: z.string().trim().min(2, 'Please add your name.').max(40, 'That name is a bit long.'),
+  message: z
+    .string()
+    .trim()
+    .min(5, 'Leave a few more words!')
+    .max(280, 'Keep it under 280 characters.'),
+  website: z.string().max(0).optional(), // honeypot
 });
 
-export function ContactSection() {
-	const [isSubmitting, setIsSubmitting] = useState(false);
+type FormValues = z.infer<typeof formSchema>;
 
-	// 1. Define your form.
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
-		defaultValues: {
-			name: '',
-			email: '',
-			message: '',
-		},
-	});
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
 
-	// 2. Define a submit handler.
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		setIsSubmitting(true);
+function NoteCard({ note, index }: { note: Note; index: number }) {
+  const style = NOTE_COLOR_STYLES[note.color] ?? NOTE_COLOR_STYLES[DEFAULT_NOTE_COLOR];
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 16, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+      style={{ rotate: rotationFor(index) }}
+      className="group relative mb-4 break-inside-avoid"
+    >
+      <div className={`relative ${style.paper} px-5 pb-5 pt-7 shadow-[3px_5px_14px_rgba(0,0,0,0.12)]`}>
+        <WavyBorder
+          filterId="wavy-frame-sm"
+          className="border border-stone-900/15 transition-colors duration-300 group-hover:border-stone-900/30"
+        />
+        {/* Washi tape */}
+        <span
+          aria-hidden
+          className={`absolute -top-2 left-1/2 h-5 w-16 -translate-x-1/2 -rotate-2 ${style.tape} shadow-sm`}
+        />
+        <p className="relative font-hand text-xl leading-snug text-stone-800">{note.message}</p>
+        <div className="relative mt-3 flex items-baseline justify-between gap-2">
+          <span className="font-hand text-lg font-semibold text-stone-700">— {note.name}</span>
+          <span className="font-hand text-sm text-stone-500">{formatDate(note.createdAt)}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
-		// Simulate form submission
-		setTimeout(() => {
-			setIsSubmitting(false);
-			form.reset();
+function NoteSkeleton({ index }: { index: number }) {
+  return (
+    <div
+      style={{ rotate: rotationFor(index) }}
+      className="mb-4 break-inside-avoid bg-foreground/5 px-5 pb-5 pt-7"
+    >
+      <div className="h-4 w-full rounded bg-foreground/10" />
+      <div className="mt-2 h-4 w-2/3 rounded bg-foreground/10" />
+      <div className="mt-4 h-3 w-1/3 rounded bg-foreground/10" />
+    </div>
+  );
+}
 
-			toast({
-				title: 'Message sent!',
-				description: 'Thank you for reaching out. I will get back to you soon.',
-			});
-		}, 1500);
+export function Guestbook() {
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [color, setColor] = useState<NoteColor>(DEFAULT_NOTE_COLOR);
+  const [submitting, setSubmitting] = useState(false);
+  const [hasSigned, setHasSigned] = useState(false);
 
-		// In a real implementation, you would send this data to your backend
-		console.log(values);
-	}
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { name: '', message: '', website: '' },
+  });
 
-	const socialLinks = [
-		{
-			name: 'Email',
-			icon: <Mail className="h-5 w-5" />,
-			href: 'mailto:your.email@example.com',
-			label: 'your.email@example.com',
-		},
-		{
-			name: 'GitHub',
-			icon: <Github className="h-5 w-5" />,
-			href: 'https://github.com/jacklvd',
-			label: 'github.com/jacklvd',
-		},
-		{
-			name: 'LinkedIn',
-			icon: <Linkedin className="h-5 w-5" />,
-			href: 'https://linkedin.com/in/yourusername',
-			label: 'linkedin.com/in/yourusername',
-		},
-	];
+  useEffect(() => {
+    setHasSigned(localStorage.getItem(SIGNED_KEY) === '1');
 
-	return (
-		<section
-			id="contact"
-			className="py-16 md:py-24 retro-section text-green-400 font-mono"
-		>
-			<div className="container mx-auto px-4">
-				<h2 className="text-3xl font-bold tracking-tight mb-2 text-center text-green-400 font-mono">
-					&gt; CONTACT.COM
-					<span className="text-yellow-400 animate-pulse">_</span>
-				</h2>
-				<p className="text-green-300 text-center mb-12 font-mono text-sm max-w-md mx-auto">
-					[ESTABLISHING CONNECTION...] █████████████ 100%
-				</p>
+    let active = true;
+    fetch('/api/guestbook')
+      .then((r) => r.json())
+      .then((data) => {
+        if (active && Array.isArray(data.notes)) setNotes(data.notes);
+      })
+      .catch(() => {})
+      .finally(() => active && setLoading(false));
+    return () => {
+      active = false;
+    };
+  }, []);
 
-				<div className="max-w-4xl mx-auto bg-gray-900 border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
-					{/* macOS terminal header */}
-					<div className="bg-gray-800 px-4 py-3 flex items-center justify-between border-b border-gray-700">
-						<div className="flex space-x-2">
-							<div className="w-3 h-3 bg-red-500 rounded-full"></div>
-							<div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-							<div className="w-3 h-3 bg-green-500 rounded-full"></div>
-						</div>
-						<span className="font-mono text-sm text-gray-300">
-							jack@portfolio ~ % cd /COMMUNICATION
-						</span>
-						<div className="w-16"></div>
-					</div>
+  async function onSubmit(values: FormValues) {
+    if (values.website) return; // honeypot
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/guestbook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...values, color }),
+      });
+      const data = await res.json();
 
-					<div className="p-6">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-							{/* Contact Info */}
-							<motion.div
-								className="bg-black border border-green-400 p-4"
-								initial={{ opacity: 0, x: -20 }}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{ duration: 0.5 }}
-							>
-								<div className="text-green-400 font-mono text-sm mb-4">
-									C:\&gt; cat contact_info.txt
-								</div>
+      if (res.status === 409) {
+        localStorage.setItem(SIGNED_KEY, '1');
+        setHasSigned(true);
+        toast({ title: data.error ?? "You've already signed 💛" });
+        return;
+      }
+      if (!res.ok) {
+        toast({ title: data.error ?? 'Something went wrong.', variant: 'destructive' });
+        return;
+      }
 
-								<h3 className="text-yellow-400 font-mono font-bold mb-4">
-									&gt; AVAILABLE_CHANNELS
-								</h3>
+      if (data.note) setNotes((prev) => [data.note as Note, ...prev]);
+      localStorage.setItem(SIGNED_KEY, '1');
+      setHasSigned(true);
+      form.reset();
+      setColor(DEFAULT_NOTE_COLOR);
+      toast({ title: 'Thanks for signing the guestbook! 🌟' });
+    } catch {
+      toast({ title: 'Could not reach the guestbook. Try again later.', variant: 'destructive' });
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
-								<div className="space-y-3">
-									{socialLinks.map((link, index) => (
-										<a
-											key={link.name}
-											href={link.href}
-											target="_blank"
-											rel="noreferrer"
-											className="block p-3 border border-green-400 hover:border-yellow-400 hover:bg-green-900 transition-all group"
-										>
-											<div className="flex items-center gap-3">
-												<div className="flex-shrink-0 h-8 w-8 bg-green-400 text-black rounded-none flex items-center justify-center group-hover:bg-yellow-400 transition-colors">
-													{link.icon}
-												</div>
-												<div>
-													<p className="font-mono font-bold text-green-400 group-hover:text-yellow-400">
-														[{String(index + 1).padStart(2, '0')}]{' '}
-														{link.name.toUpperCase()}
-													</p>
-													<p className="text-sm text-green-300 font-mono">
-														{link.label}
-													</p>
-												</div>
-											</div>
-										</a>
-									))}
-								</div>
+  return (
+    <section id="contact" className="scroll-mt-24 py-16 md:py-24">
+      <header className="mb-12 md:mb-16">
+        <p className="mb-3 text-[0.6rem] uppercase tracking-[0.4em] text-muted-foreground">
+          Say hello
+        </p>
+        <h2 className="font-title text-5xl text-foreground md:text-6xl">The Guestbook</h2>
+        <p className="mt-3 max-w-md font-hand text-2xl text-muted-foreground">
+          Leave a note before you go — pin it to the board for everyone to see.
+        </p>
+      </header>
 
-								<div className="mt-6 pt-4 border-t border-green-400">
-									<div className="text-cyan-400 font-mono text-sm">
-										[STATUS]: AVAILABLE FOR NEW OPPORTUNITIES
-									</div>
-									<div className="text-green-300 font-mono text-sm mt-1">
-										[MODE]: COLLABORATIVE_PROJECTS_ACCEPTED
-									</div>
-								</div>
+      <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
+        {/* Note-writing sheet */}
+        <div className="group relative">
+          <WavyBorder className="rounded-2xl border border-foreground/20" />
+          <div
+            className={`relative rounded-2xl p-6 text-stone-800 shadow-sm transition-colors duration-300 md:p-8 ${NOTE_COLOR_STYLES[color].paper}`}
+            style={{
+              backgroundImage:
+                'repeating-linear-gradient(transparent, transparent 31px, rgba(120,110,90,0.18) 31px, rgba(120,110,90,0.18) 32px)',
+            }}
+          >
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-hand text-lg text-stone-500">Your name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Jane Doe"
+                          className="border-0 border-b border-stone-300 bg-transparent px-0 font-hand text-2xl text-stone-800 placeholder:text-stone-400 focus-visible:ring-0 rounded-none"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="font-hand text-base text-rose-500" />
+                    </FormItem>
+                  )}
+                />
 
-								<div className="text-green-400 font-mono text-sm mt-4">
-									C:\&gt; <span className="animate-pulse">█</span>
-								</div>
-							</motion.div>
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-hand text-lg text-stone-500">Your note</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Write something kind, funny, or memorable…"
+                          className="min-h-[110px] resize-none border-0 bg-transparent px-0 font-hand text-2xl leading-8 text-stone-800 placeholder:text-stone-400 focus-visible:ring-0"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="font-hand text-base text-rose-500" />
+                    </FormItem>
+                  )}
+                />
 
-							{/* Contact Form */}
-							<motion.div
-								className="bg-black border border-green-400 p-4"
-								initial={{ opacity: 0, x: 20 }}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{ duration: 0.5, delay: 0.2 }}
-							>
-								<div className="text-green-400 font-mono text-sm mb-4">
-									C:\&gt; run message_sender.exe
-								</div>
+                {/* Honeypot — visually hidden, off-screen, ignored by humans. */}
+                <div aria-hidden className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
+                  <label htmlFor="website">Website</label>
+                  <input
+                    id="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    {...form.register('website')}
+                  />
+                </div>
 
-								<Form {...form}>
-									<form
-										onSubmit={form.handleSubmit(onSubmit)}
-										className="space-y-4"
-									>
-										<FormField
-											control={form.control}
-											name="name"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel className="text-cyan-400 font-mono text-sm">
-														[INPUT_NAME]:
-													</FormLabel>
-													<FormControl>
-														<Input
-															placeholder="Enter your name..."
-															className="bg-gray-800 border-green-400 text-green-300 font-mono rounded-none focus:border-yellow-400 placeholder:text-green-600"
-															{...field}
-														/>
-													</FormControl>
-													<FormMessage className="text-red-400 font-mono text-xs" />
-												</FormItem>
-											)}
-										/>
+                {/* Paper color picker */}
+                <div className="flex items-center gap-3">
+                  <span className="font-hand text-lg text-stone-500">Paper</span>
+                  <div className="flex gap-2">
+                    {NOTE_COLORS.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setColor(c)}
+                        aria-label={`${c} paper`}
+                        aria-pressed={color === c}
+                        className={`h-7 w-7 rounded-full border border-stone-400/60 transition-transform hover:scale-110 ${NOTE_COLOR_STYLES[c].swatch} ${
+                          color === c
+                            ? 'scale-110 ring-2 ring-stone-700 ring-offset-2 ring-offset-background'
+                            : ''
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
 
-										<FormField
-											control={form.control}
-											name="email"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel className="text-cyan-400 font-mono text-sm">
-														[INPUT_EMAIL]:
-													</FormLabel>
-													<FormControl>
-														<Input
-															placeholder="user@domain.com"
-															className="bg-gray-800 border-green-400 text-green-300 font-mono rounded-none focus:border-yellow-400 placeholder:text-green-600"
-															{...field}
-														/>
-													</FormControl>
-													<FormMessage className="text-red-400 font-mono text-xs" />
-												</FormItem>
-											)}
-										/>
+                {hasSigned ? (
+                  <p className="flex items-center gap-2 font-hand text-xl text-stone-600">
+                    <Check className="h-5 w-5" /> You&apos;ve signed the guestbook — thank you!
+                  </p>
+                ) : (
+                  <Button
+                    type="submit"
+                    disabled={submitting}
+                    className="group/btn relative bg-transparent px-6 py-2 font-hand text-xl text-stone-800 shadow-none hover:bg-transparent hover:text-stone-900"
+                  >
+                    <WavyButtonBorder />
+                    <span className="relative flex items-center gap-2">
+                      <Send className="h-4 w-4" />
+                      {submitting ? 'Pinning…' : 'Pin to the board'}
+                    </span>
+                  </Button>
+                )}
+              </form>
+            </Form>
+          </div>
+        </div>
 
-										<FormField
-											control={form.control}
-											name="message"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel className="text-cyan-400 font-mono text-sm">
-														[INPUT_MESSAGE]:
-													</FormLabel>
-													<FormControl>
-														<Textarea
-															placeholder="Type your message here..."
-															className="bg-gray-800 border-green-400 text-green-300 font-mono rounded-none focus:border-yellow-400 placeholder:text-green-600 min-h-[100px]"
-															{...field}
-														/>
-													</FormControl>
-													<FormMessage className="text-red-400 font-mono text-xs" />
-												</FormItem>
-											)}
-										/>
+        {/* Contact card */}
+        <aside className="group relative self-start">
+          <WavyBorder className="rounded-2xl border border-foreground/20" />
+          <div className="relative rounded-2xl bg-background p-6 md:p-8">
+            <h3 className="font-title text-3xl text-foreground">Reach me directly</h3>
+            <p className="mt-1 font-hand text-xl text-muted-foreground">
+              Prefer a proper hello? I&apos;m around here:
+            </p>
+            <ul className="mt-5 space-y-3">
+              {socialLinks.map(({ name, icon: Icon, href, label }) => (
+                <li key={name}>
+                  <a
+                    href={href}
+                    target={href.startsWith('http') ? '_blank' : undefined}
+                    rel="noreferrer"
+                    className="flex items-center gap-3 text-foreground/80 transition-colors hover:text-foreground"
+                  >
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground/5">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <span className="font-hand text-xl">{label}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </aside>
+      </div>
 
-										<Button
-											type="submit"
-											className="w-full bg-green-400 text-black font-mono font-bold rounded-none border-2 border-green-400 hover:bg-yellow-400 hover:border-yellow-400 transition-colors"
-											disabled={isSubmitting}
-										>
-											{isSubmitting ? (
-												<>
-													<span className="animate-pulse mr-2">⚡</span>
-													[TRANSMITTING...]
-												</>
-											) : (
-												<>
-													<Send className="mr-2 h-4 w-4" />
-													[SEND_MESSAGE.EXE]
-												</>
-											)}
-										</Button>
-									</form>
-								</Form>
+      <div className="my-12">
+        <WavyDivider />
+      </div>
 
-								<div className="text-green-400 font-mono text-sm mt-4">
-									C:\&gt; <span className="animate-pulse">█</span>
-								</div>
-							</motion.div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-	);
+      {/* The wall of notes */}
+      <div className="columns-1 gap-4 sm:columns-2 lg:columns-3">
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => <NoteSkeleton key={i} index={i} />)
+        ) : notes.length === 0 ? (
+          <p className="col-span-full text-center font-hand text-2xl text-muted-foreground">
+            No notes yet — be the first to sign! ✍️
+          </p>
+        ) : (
+          <AnimatePresence initial={false}>
+            {notes.map((note, i) => (
+              <NoteCard key={`${note.createdAt}-${i}`} note={note} index={i} />
+            ))}
+          </AnimatePresence>
+        )}
+      </div>
+    </section>
+  );
 }

@@ -257,33 +257,35 @@ img {
 	}
 
 	.dark {
-		--background: 222.2 84% 4.9%;
-		--foreground: 210 40% 98%;
+		/* Warm "ink at night" palette to match the light paper-cream theme,
+		   with proper surface elevation (card/popover sit a step above bg). */
+		--background: 30 14% 8%;
+		--foreground: 36 30% 90%;
 
-		--card: 222.2 84% 4.9%;
-		--card-foreground: 210 40% 98%;
+		--card: 30 12% 12%;
+		--card-foreground: 36 30% 90%;
 
-		--popover: 222.2 84% 4.9%;
-		--popover-foreground: 210 40% 98%;
+		--popover: 30 12% 12%;
+		--popover-foreground: 36 30% 90%;
 
 		--primary: 217.2 91.2% 59.8%;
 		--primary-foreground: 222.2 47.4% 11.2%;
 
-		--secondary: 217.2 32.6% 17.5%;
-		--secondary-foreground: 210 40% 98%;
+		--secondary: 30 10% 16%;
+		--secondary-foreground: 36 30% 90%;
 
-		--muted: 217.2 32.6% 17.5%;
-		--muted-foreground: 215 20.2% 65.1%;
+		--muted: 30 10% 18%;
+		--muted-foreground: 36 14% 64%;
 
-		--accent: 217.2 32.6% 17.5%;
-		--accent-foreground: 210 40% 98%;
+		--accent: 30 10% 16%;
+		--accent-foreground: 36 30% 90%;
 
 		--destructive: 0 62.8% 30.6%;
 		--destructive-foreground: 210 40% 98%;
 
-		--border: 217.2 32.6% 17.5%;
-		--input: 217.2 32.6% 17.5%;
-		--ring: 224.3 76.3% 48%;
+		--border: 30 10% 20%;
+		--input: 30 10% 20%;
+		--ring: 36 45% 55%;
 
 		/* Custom chart colors - slightly lighter in dark mode */
 		--chart-1: 220 70% 60%;
@@ -313,6 +315,11 @@ img {
 	}
 	body {
 		@apply bg-background text-foreground;
+	}
+	/* Warm, on-brand text selection (instead of the browser's cold blue). */
+	::selection {
+		background-color: hsl(36 60% 70% / 0.45);
+		color: inherit;
 	}
 }
 

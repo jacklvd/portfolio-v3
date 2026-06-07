@@ -7,6 +7,7 @@ import { WavyBorder } from '@/components/effects/wavy-frame';
 
 interface Experience {
   _id: string;
+  id: number;
   position: string;
   company: string;
   date: string;
@@ -38,13 +39,16 @@ const ExperienceSection: React.FC = () => {
 
   useEffect(() => {
     const fetchExperiences = async () => {
-      const query = `*[_type == "experience"] | order(date desc) {
-        _id, position, company, date, url, description
+      const query = `*[_type == "experience"] {
+        _id, id, position, company, date, url, description
       }`;
       try {
-        const data = await client.fetch(query);
-        setExperiences(data);
-        if (data.length > 0) setSelectedId(data[0]._id);
+        const data: Experience[] = await client.fetch(query);
+        // Render by the custom numeric `id` field ascending (1 first). Note:
+        // `_id` is Sanity's auto-generated UUID, not the id set in the studio.
+        const sorted = [...data].sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+        setExperiences(sorted);
+        if (sorted.length > 0) setSelectedId(sorted[0]._id);
       } catch (error) {
         console.error('Failed to fetch experiences:', error);
       }

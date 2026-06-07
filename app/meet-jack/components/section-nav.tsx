@@ -6,6 +6,7 @@ const sections = [
   { id: 'experience', label: 'Experience', index: '02' },
   { id: 'work', label: 'Projects', index: '03' },
   { id: 'publications', label: 'Research', index: '04' },
+  { id: 'contact', label: 'Guestbook', index: '05' },
 ];
 
 export function SectionNav() {

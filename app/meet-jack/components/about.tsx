@@ -64,7 +64,7 @@ export function About() {
                 <span
                   key={i}
                   style={{ transitionDelay: `${delay}ms` }}
-                  className={`absolute ${pos} ${color} ${hover} scale-0 opacity-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-100 group-hover:opacity-100`}
+                  className={`absolute ${pos} ${color} ${hover} scale-0 opacity-0 transition-all duration-300 ease-spring-pop group-hover:scale-100 group-hover:opacity-100`}
                 >
                   <Icon
                     size={size}
