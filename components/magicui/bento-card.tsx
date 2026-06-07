@@ -1,6 +1,6 @@
-import { urlFor } from '@/client/client';
 import { GitBranch, ExternalLink } from 'lucide-react';
 import { WavyCard } from '@/components/effects/wavy-frame';
+import { projectImageUrl } from '@/lib/projects/image';
 
 const BentoCard = ({
   work,
@@ -81,7 +81,7 @@ const BentoCard = ({
       <WavyCard>
         {/* Image */}
         <img
-          src={urlFor(work.image).width(900).url()}
+          src={projectImageUrl(work.image, 900)}
           alt={work.title}
           className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 transition-all duration-700"
           loading="lazy"
@@ -108,7 +108,7 @@ const BentoCard = ({
       <WavyCard className="flex">
         <div className="w-2/5 shrink-0 overflow-hidden">
           <img
-            src={urlFor(work.image).width(600).url()}
+            src={projectImageUrl(work.image, 600)}
             alt={work.title}
             className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
             loading="lazy"
@@ -133,7 +133,7 @@ const BentoCard = ({
     <WavyCard className="flex flex-col">
       <div className="aspect-video overflow-hidden">
         <img
-          src={urlFor(work.image).width(500).url()}
+          src={projectImageUrl(work.image, 500)}
           alt={work.title}
           className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
           loading="lazy"

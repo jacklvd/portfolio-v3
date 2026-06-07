@@ -1,10 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { client, urlFor } from '@/client/client';
+import { client } from '@/client/client';
 import { motion } from 'framer-motion';
 import { GitBranch, ExternalLink } from 'lucide-react';
 import BentoCard from '@/components/magicui/bento-card';
 import { WavyCard, WavyButtonBorder, WavyDivider } from '@/components/effects/wavy-frame';
+import { projectImageUrl } from '@/lib/projects/image';
 import Image from 'next/image';
 
 const inView = (delay = 0) => ({
@@ -30,24 +31,33 @@ const Project = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    client
-      .fetch('*[_type == "work"] | order(orderRank)')
-      .then(data => {
-        const modifiedData = data.map((work: Work, index: number) => ({
+    // Projects come from two sources: Sanity (public, fetched client-side) and
+    // GitHub Discussions (via our server route). Merge them into one list.
+    Promise.all([
+      client
+        .fetch('*[_type == "work"] | order(orderRank)')
+        .catch(() => [] as Work[]),
+      fetch('/api/projects')
+        .then(r => r.json())
+        .then(d => (d.projects ?? []) as Work[])
+        .catch(() => [] as Work[]),
+    ])
+      .then(([sanityWorks, githubWorks]) => {
+        // Sanity's first four stay featured (drives the bento layout); GitHub
+        // projects opt in via their own `featured` flag.
+        const sanity = sanityWorks.map((work: Work, index: number) => ({
           ...work,
           featured: index < 4,
         }));
-        setWorks(modifiedData);
-        setIsLoading(false);
+        setWorks([...sanity, ...githubWorks]);
       })
-      .catch(error => {
-        console.error('Failed to fetch projects:', error);
-        setIsLoading(false);
-      });
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const featuredWorks = works.filter(w => w.featured);
-  const regularWorks = works.filter(w => !w.featured);
+  // Cap featured at 4 (the bento only renders four slots) so nothing is dropped.
+  const featuredWorks = works.filter(w => w.featured).slice(0, 4);
+  const featuredIds = new Set(featuredWorks.map(w => w._id));
+  const regularWorks = works.filter(w => !featuredIds.has(w._id));
 
   return (
     <section className="py-16 md:py-24" id="work">
@@ -112,7 +122,7 @@ const Project = () => {
                       {/* Image */}
                       <div className="aspect-video overflow-hidden">
                         <Image
-                          src={urlFor(work.image).url()}
+                          src={projectImageUrl(work.image)}
                           alt={work.title}
                           width={600}
                           height={338}

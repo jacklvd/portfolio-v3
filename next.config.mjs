@@ -7,6 +7,17 @@ const nextConfig = {
         hostname: 'cdn.sanity.io',
         pathname: '**',
       },
+      // GitHub repo social-preview images (for projects sourced from Discussions).
+      {
+        protocol: 'https',
+        hostname: 'opengraph.githubassets.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+        pathname: '**',
+      },
     ],
   },
   // Only public identifiers are inlined into the client bundle. SANITY_TOKEN is

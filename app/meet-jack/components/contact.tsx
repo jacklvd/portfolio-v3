@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Mail, Github, Linkedin, Check } from 'lucide-react';
+import { Send, Mail, Github, Linkedin, Check, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -68,8 +68,27 @@ function formatDate(iso: string) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-function NoteCard({ note, index }: { note: Note; index: number }) {
+// Notes longer than this get truncated on the wall and become click-to-expand.
+const PREVIEW_LIMIT = 160;
+
+function previewOf(message: string) {
+  if (message.length <= PREVIEW_LIMIT) return message;
+  const slice = message.slice(0, PREVIEW_LIMIT);
+  const lastSpace = slice.lastIndexOf(' ');
+  return `${slice.slice(0, lastSpace > 80 ? lastSpace : PREVIEW_LIMIT).trimEnd()}…`;
+}
+
+function NoteCard({
+  note,
+  index,
+  onOpen,
+}: {
+  note: Note;
+  index: number;
+  onOpen: () => void;
+}) {
   const style = NOTE_COLOR_STYLES[note.color] ?? NOTE_COLOR_STYLES[DEFAULT_NOTE_COLOR];
+  const isLong = note.message.length > PREVIEW_LIMIT;
   return (
     <motion.div
       layout
@@ -79,7 +98,25 @@ function NoteCard({ note, index }: { note: Note; index: number }) {
       style={{ rotate: rotationFor(index) }}
       className="group relative mb-4 break-inside-avoid"
     >
-      <div className={`relative ${style.paper} px-5 pb-5 pt-7 shadow-[3px_5px_14px_rgba(0,0,0,0.12)]`}>
+      <div
+        className={`relative ${style.paper} px-5 pb-5 pt-7 shadow-[3px_5px_14px_rgba(0,0,0,0.12)] ${
+          isLong ? 'cursor-pointer transition-transform hover:-translate-y-0.5' : ''
+        }`}
+        {...(isLong
+          ? {
+              role: 'button',
+              tabIndex: 0,
+              'aria-label': `Read the full note from ${note.name}`,
+              onClick: onOpen,
+              onKeyDown: (e: React.KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onOpen();
+                }
+              },
+            }
+          : {})}
+      >
         <WavyBorder
           filterId="wavy-frame-sm"
           className="border border-stone-900/15 transition-colors duration-300 group-hover:border-stone-900/30"
@@ -89,12 +126,82 @@ function NoteCard({ note, index }: { note: Note; index: number }) {
           aria-hidden
           className={`absolute -top-2 left-1/2 h-5 w-16 -translate-x-1/2 -rotate-2 ${style.tape} shadow-sm`}
         />
-        <p className="relative font-hand text-xl leading-snug text-stone-800">{note.message}</p>
+        <p className="relative font-hand text-xl leading-snug text-stone-800">
+          {isLong ? previewOf(note.message) : note.message}
+        </p>
+        {isLong && (
+          <span className="relative mt-2 inline-block font-hand text-base text-stone-500 underline decoration-dotted underline-offset-2 transition-colors group-hover:text-stone-700">
+            Read more →
+          </span>
+        )}
         <div className="relative mt-3 flex items-baseline justify-between gap-2">
           <span className="font-hand text-lg font-semibold text-stone-700">— {note.name}</span>
           <span className="font-hand text-sm text-stone-500">{formatDate(note.createdAt)}</span>
         </div>
       </div>
+    </motion.div>
+  );
+}
+
+function NoteModal({ note, onClose }: { note: Note; onClose: () => void }) {
+  const style = NOTE_COLOR_STYLES[note.color] ?? NOTE_COLOR_STYLES[DEFAULT_NOTE_COLOR];
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div
+        className="absolute inset-0 bg-stone-950/50 backdrop-blur-sm"
+        aria-hidden
+        onClick={onClose}
+      />
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        initial={{ opacity: 0, scale: 0.94, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 8 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
+        className={`relative w-full max-w-lg ${style.paper} px-7 pb-7 pt-9 text-stone-800 shadow-2xl`}
+      >
+        <WavyBorder filterId="wavy-frame-sm" className="border border-stone-900/20" />
+        <span
+          aria-hidden
+          className={`absolute -top-2.5 left-1/2 h-6 w-20 -translate-x-1/2 -rotate-2 ${style.tape} shadow-sm`}
+        />
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close note"
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-stone-500 transition-colors hover:bg-stone-900/10 hover:text-stone-800"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <p className="relative max-h-[60vh] overflow-y-auto whitespace-pre-wrap font-hand text-2xl leading-relaxed text-stone-800">
+          {note.message}
+        </p>
+        <div className="relative mt-5 flex items-baseline justify-between gap-2 border-t border-stone-900/10 pt-3">
+          <span className="font-hand text-xl font-semibold text-stone-700">— {note.name}</span>
+          <span className="font-hand text-base text-stone-500">{formatDate(note.createdAt)}</span>
+        </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -118,6 +225,7 @@ export function Guestbook() {
   const [color, setColor] = useState<NoteColor>(DEFAULT_NOTE_COLOR);
   const [submitting, setSubmitting] = useState(false);
   const [hasSigned, setHasSigned] = useState(false);
+  const [openNote, setOpenNote] = useState<Note | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -335,11 +443,20 @@ export function Guestbook() {
         ) : (
           <AnimatePresence initial={false}>
             {notes.map((note, i) => (
-              <NoteCard key={`${note.createdAt}-${i}`} note={note} index={i} />
+              <NoteCard
+                key={`${note.createdAt}-${i}`}
+                note={note}
+                index={i}
+                onOpen={() => setOpenNote(note)}
+              />
             ))}
           </AnimatePresence>
         )}
       </div>
+
+      <AnimatePresence>
+        {openNote && <NoteModal note={openNote} onClose={() => setOpenNote(null)} />}
+      </AnimatePresence>
     </section>
   );
 }
