@@ -7,6 +7,7 @@ import {
   DEFAULT_NOTE_COLOR,
 } from '@/lib/guestbook/client'
 import { getNotes, addNote, hasNoteFromIp, hashIp, type Note } from '@/lib/guestbook'
+import { rateLimit } from '@/lib/rate-limit'
 
 // GitHub GraphQL + node `crypto` need the Node runtime (not edge).
 export const runtime = 'nodejs'
@@ -53,7 +54,17 @@ function getClientIp(req: Request): string {
   return req.headers.get('x-real-ip')?.trim() ?? 'unknown'
 }
 
-export async function GET() {
+function tooMany(retryAfterSec: number) {
+  return NextResponse.json(
+    { error: 'Slow down a moment, then try again. 💛' },
+    { status: 429, headers: { 'Retry-After': String(retryAfterSec) } },
+  )
+}
+
+export async function GET(req: Request) {
+  const gate = rateLimit(`gb-get:${hashIp(getClientIp(req))}`, { limit: 30, windowMs: 60_000 })
+  if (!gate.ok) return tooMany(gate.retryAfterSec)
+
   if (!isGuestbookConfigured) {
     return NextResponse.json({ notes: DEMO_NOTES, demo: true })
   }
@@ -67,6 +78,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const postGate = rateLimit(`gb-post:${hashIp(getClientIp(req))}`, { limit: 5, windowMs: 600_000 })
+  if (!postGate.ok) return tooMany(postGate.retryAfterSec)
+
   let json: unknown
   try {
     json = await req.json()
