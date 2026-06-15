@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, BookOpen } from 'lucide-react';
 import Link from 'next/link';
@@ -13,6 +13,7 @@ interface Publication {
   abstract?: string;
 }
 
+/* MIGRATED to GitHub Discussions — kept for reference, now fetched from /api/publications:
 const publications: Publication[] = [
   {
     title: 'Real-time Speech Summarization for Medical Conversations',
@@ -39,8 +40,20 @@ const publications: Publication[] = [
       'Transparency in AI healthcare decision-making is crucial for building trust. Incorporating reasoning capabilities enables Large Language Models to understand emotions in context, handle nuanced language, and infer unstated sentiments.',
   },
 ];
+*/
 
 export const PublicationsSection = () => {
+  const [publications, setPublications] = useState<Publication[]>([]);
+
+  useEffect(() => {
+    // Publications now come from GitHub Discussions (comments on the
+    // Publications discussion).
+    fetch('/api/publications')
+      .then(r => r.json())
+      .then((d: { publications?: Publication[] }) => setPublications(d.publications ?? []))
+      .catch(() => setPublications([]));
+  }, []);
+
   return (
     <section className="py-16 md:py-24" id="publications">
       <motion.p

@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { client } from '@/client/client';
+// MIGRATED to GitHub Discussions — Sanity source kept for reference, see /api/experience.
+// import { client } from '@/client/client';
 import { ChevronDown, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WavyBorder } from '@/components/effects/wavy-frame';
@@ -27,6 +28,7 @@ const ExperienceSection: React.FC = () => {
   const [selectedId, setSelectedId] = useState<string>('');
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [isDropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -38,6 +40,19 @@ const ExperienceSection: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // Experience now comes from GitHub Discussions (comments on the Experience
+    // discussion), already sorted by `id` server-side.
+    fetch('/api/experience')
+      .then(r => r.json())
+      .then((d: { experiences?: Experience[] }) => {
+        const data = d.experiences ?? [];
+        setExperiences(data);
+        if (data.length > 0) setSelectedId(data[0]._id);
+      })
+      .catch(error => console.error('Failed to fetch experiences:', error))
+      .finally(() => setIsLoading(false));
+
+    /* MIGRATED — previous Sanity fetch:
     const fetchExperiences = async () => {
       const query = `*[_type == "experience"] {
         _id, id, position, company, date, url, description
@@ -54,11 +69,12 @@ const ExperienceSection: React.FC = () => {
       }
     };
     fetchExperiences();
+    */
   }, []);
 
   const selected = experiences.find(e => e._id === selectedId) || experiences[0];
 
-  if (experiences.length === 0)
+  if (isLoading)
     return (
       <div className="py-16 md:py-24 flex justify-center items-center min-h-[200px]">
         <div className="w-5 h-5 border-t border-foreground rounded-full animate-spin" />

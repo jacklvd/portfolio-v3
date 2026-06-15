@@ -13,6 +13,7 @@ export interface GithubProject {
   demo?: string
   image: string
   featured: boolean
+  order: number
 }
 
 interface ProjectMeta {
@@ -21,6 +22,7 @@ interface ProjectMeta {
   demo?: string | null
   image?: string | null
   featured?: boolean
+  order?: number
 }
 
 // GitHub's auto-generated social preview image for a repo, derived from its URL.
@@ -94,7 +96,14 @@ export async function getGithubProjects(): Promise<GithubProject[]> {
         demo: meta.demo ?? undefined,
         image: meta.image || githubOgImage(source),
         featured: Boolean(meta.featured),
+        order: typeof meta.order === 'number' ? meta.order : Number.MAX_SAFE_INTEGER,
       }
     })
     .filter((p): p is GithubProject => p !== null)
+    .sort((a, b) => a.order - b.order)
+}
+
+// Stable ascending sort by `order`; items without an explicit order sort last.
+export function sortByOrder(projects: GithubProject[]): GithubProject[] {
+  return [...projects].sort((a, b) => a.order - b.order)
 }
