@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { client } from '@/client/client';
+// MIGRATED to GitHub Discussions — Sanity source kept for reference, see /api/projects.
+// import { client } from '@/client/client';
 import { motion } from 'framer-motion';
 import { GitBranch, ExternalLink } from 'lucide-react';
 import BentoCard from '@/components/magicui/bento-card';
@@ -31,6 +32,15 @@ const Project = () => {
 
   useEffect(() => {
     setIsLoading(true);
+    // Projects now come solely from GitHub Discussions (via our server route),
+    // already sorted by `order`. The Sanity source is migrated and commented out.
+    fetch('/api/projects')
+      .then(r => r.json())
+      .then(d => setWorks((d.projects ?? []) as Work[]))
+      .catch(() => setWorks([]))
+      .finally(() => setIsLoading(false));
+
+    /* MIGRATED — previous dual-source merge (Sanity + GitHub):
     // Projects come from two sources: Sanity (public, fetched client-side) and
     // GitHub Discussions (via our server route). Merge them into one list.
     Promise.all([
@@ -52,6 +62,7 @@ const Project = () => {
         setWorks([...sanity, ...githubWorks]);
       })
       .finally(() => setIsLoading(false));
+    */
   }, []);
 
   // Cap featured at 4 (the bento only renders four slots) so nothing is dropped.
