@@ -16,6 +16,7 @@ describe('rateLimit', () => {
     const res = rateLimit(key, { limit: 2, windowMs: 1000 })
     expect(res.ok).toBe(false)
     expect(res.retryAfterSec).toBeGreaterThanOrEqual(1)
+    expect(res.retryAfterSec).toBeLessThanOrEqual(1)
   })
 
   it('resets after the window elapses', async () => {

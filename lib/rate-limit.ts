@@ -16,10 +16,21 @@ interface RateLimitOptions {
 
 const hits = new Map<string, number[]>()
 
+// Opportunistic cleanup so the map can't grow unbounded over a long uptime.
+// Runs on every call (including blocked ones) so a flood of distinct blocked
+// keys can't starve the sweep.
+function maybeCleanup(windowStart: number) {
+  if (hits.size <= 5000) return
+  for (const [k, v] of hits) {
+    if (v.length === 0 || v[v.length - 1] <= windowStart) hits.delete(k)
+  }
+}
+
 export function rateLimit(key: string, opts: RateLimitOptions): RateLimitResult {
   const now = Date.now()
   const windowStart = now - opts.windowMs
   const recent = (hits.get(key) ?? []).filter((t) => t > windowStart)
+  maybeCleanup(windowStart)
 
   if (recent.length >= opts.limit) {
     hits.set(key, recent)
@@ -29,13 +40,5 @@ export function rateLimit(key: string, opts: RateLimitOptions): RateLimitResult 
 
   recent.push(now)
   hits.set(key, recent)
-
-  // Opportunistic cleanup so the map can't grow unbounded over a long uptime.
-  if (hits.size > 5000) {
-    for (const [k, v] of hits) {
-      if (v.length === 0 || v[v.length - 1] <= windowStart) hits.delete(k)
-    }
-  }
-
   return { ok: true, retryAfterSec: 0 }
 }
