@@ -219,7 +219,7 @@ async function main() {
   )
   const expBodies = await getCommentBodies(expParent.number)
   for (const e of exps) {
-    if (expBodies.some((b) => b.includes(`"id":${e.id}`) && b.includes('exp:'))) {
+    if (expBodies.some((b) => b.includes('exp:') && b.includes(`"id":${e.id},`))) {
       console.log(`SKIP experience (exists): ${e.company} #${e.id}`)
       continue
     }
