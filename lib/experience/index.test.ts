@@ -26,4 +26,9 @@ describe('parseExpComment', () => {
     const body = '<!-- exp:{"id":2,"company":"X"} -->'
     expect(parseExpComment(body, 'C_y')).toBeNull()
   })
+
+  it('returns null when the exp block contains invalid JSON', () => {
+    const body = '<!-- exp:{position: "Intern", company: "X"} -->' // unquoted keys
+    expect(parseExpComment(body, 'C_z')).toBeNull()
+  })
 })
