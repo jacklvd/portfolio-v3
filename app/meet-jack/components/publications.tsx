@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ExternalLink, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { WavyBorder, WavyButtonBorder, WavyDivider } from '@/components/effects/wavy-frame';
+import { inView } from '@/components/effects/reveal';
 
 interface Publication {
   title: string;
@@ -44,19 +45,13 @@ export const PublicationsSection = () => {
   return (
     <section className="py-16 md:py-24" id="publications">
       <motion.p
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+        {...inView()}
         className="text-[0.6rem] tracking-[0.4em] uppercase text-muted-foreground mb-3"
       >
         04 — Research
       </motion.p>
       <motion.h2
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.05 }}
+        {...inView(0.05)}
         className="font-title text-5xl md:text-6xl text-foreground mb-12 md:mb-16"
       >
         Publications.
