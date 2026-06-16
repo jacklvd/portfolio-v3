@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { WavyBorder, WavyButtonBorder, WavyDivider } from '@/components/effects/wavy-frame';
+import { inView } from '@/components/effects/reveal';
 import {
   NOTE_COLORS,
   DEFAULT_NOTE_COLOR,
@@ -279,7 +280,7 @@ export function Guestbook() {
 
   return (
     <section id="contact" className="scroll-mt-24 py-16 md:py-24">
-      <header className="mb-12 md:mb-16">
+      <motion.header {...inView()} className="mb-12 md:mb-16">
         <p className="mb-3 text-[0.6rem] uppercase tracking-[0.4em] text-muted-foreground">
           Say hello
         </p>
@@ -287,7 +288,7 @@ export function Guestbook() {
         <p className="mt-3 max-w-md font-hand text-2xl text-muted-foreground">
           Leave a note before you go — pin it to the board for everyone to see.
         </p>
-      </header>
+      </motion.header>
 
       <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
         {/* Note-writing sheet */}
