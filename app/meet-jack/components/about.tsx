@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 'use client';
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { FileText, ChevronDown, Sparkles, Star } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -21,6 +21,18 @@ const sparkles = [
 export function About() {
   const [expanded, setExpanded] = useState(false);
 
+  const portraitRef = useRef<HTMLDivElement>(null);
+  const prefersReduced = useReducedMotion();
+  const { scrollYProgress: portraitProgress } = useScroll({
+    target: portraitRef,
+    offset: ['start end', 'end start'],
+  });
+  const portraitY = useTransform(
+    portraitProgress,
+    [0, 1],
+    prefersReduced ? [0, 0] : [16, -16],
+  );
+
   return (
     <section className="py-16 md:py-24" id="about">
       <motion.p {...fadeUp(0)} className="text-[0.6rem] tracking-[0.4em] uppercase text-muted-foreground mb-3">
@@ -33,9 +45,12 @@ export function About() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-14 lg:gap-20">
         {/* Photo + Spotify */}
         <motion.div {...inView(0.1)} className="lg:col-span-2 flex flex-col gap-6">
-          <div className="group relative aspect-[3/4] p-2">
+          <div ref={portraitRef} className="group relative aspect-[3/4] p-2">
             <WavyBorder className="rounded-[1.4rem] border border-foreground/30 shadow-[12px_12px_0_#e0e0e0] dark:shadow-[12px_12px_0_rgba(255,255,255,0.07)] transition-colors duration-300 group-hover:border-foreground/50" />
-            <div className="relative h-full w-full overflow-hidden rounded-[0.85rem]">
+            <motion.div
+              style={{ y: portraitY }}
+              className="relative h-full w-full overflow-hidden rounded-[0.85rem] will-change-transform"
+            >
               <Image
                 src="/images/hero.jpeg"
                 alt="Jack Vo"
@@ -44,7 +59,7 @@ export function About() {
                   group-hover:saturate-[1.2] group-hover:brightness-[1.04]
                   motion-safe:group-hover:scale-[1.06] motion-safe:group-hover:-rotate-1"
               />
-            </div>
+            </motion.div>
 
             {/* Magic pop: sparkles burst out around the photo on hover */}
             <div aria-hidden className="pointer-events-none absolute inset-0 z-10">
