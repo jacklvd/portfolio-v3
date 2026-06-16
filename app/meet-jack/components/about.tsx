@@ -6,19 +6,7 @@ import { FileText, ChevronDown, Sparkles, Star } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { WavyBorder, WavyButtonBorder, WavyDivider } from '@/components/effects/wavy-frame';
-
-const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 24 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay },
-});
-
-const inView = (delay = 0) => ({
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-60px' },
-  transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay },
-});
+import { inView, fadeUp } from '@/components/effects/reveal';
 
 // Sparkles that pop around the photo on hover. Full class strings are kept
 // literal so Tailwind's JIT picks them up (no runtime-built class names).

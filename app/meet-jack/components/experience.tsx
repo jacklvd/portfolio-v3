@@ -4,6 +4,7 @@ import { client } from '@/client/client';
 import { ChevronDown, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WavyBorder } from '@/components/effects/wavy-frame';
+import { inView } from '@/components/effects/reveal';
 
 interface Experience {
   _id: string;
@@ -14,13 +15,6 @@ interface Experience {
   url: string;
   description: string[];
 }
-
-const inView = (delay = 0) => ({
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 } as const,
-  viewport: { once: true, margin: '-60px' },
-  transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay },
-});
 
 const ExperienceSection: React.FC = () => {
   const [experiences, setExperiences] = useState<Experience[]>([]);

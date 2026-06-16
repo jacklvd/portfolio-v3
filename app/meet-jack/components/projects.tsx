@@ -7,13 +7,7 @@ import BentoCard from '@/components/magicui/bento-card';
 import { WavyCard, WavyButtonBorder, WavyDivider } from '@/components/effects/wavy-frame';
 import { projectImageUrl } from '@/lib/projects/image';
 import Image from 'next/image';
-
-const inView = (delay = 0) => ({
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 } as const,
-  viewport: { once: true, margin: '-60px' },
-  transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay },
-});
+import { inView } from '@/components/effects/reveal';
 
 const itemVariants = {
   hidden: { y: 16, opacity: 0 },
