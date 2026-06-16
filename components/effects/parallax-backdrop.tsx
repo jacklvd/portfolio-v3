@@ -116,9 +116,9 @@ export function ParallaxBackdrop() {
   const factor = prefersReduced ? 0 : isSmall ? 0.35 : 1;
 
   // Subtle drift over the full page scroll (0 -> 1). Far moves least, near most.
-  const farDrift = useTransform(scrollYProgress, [0, 1], [0, -20 * factor]);
-  const midDrift = useTransform(scrollYProgress, [0, 1], [0, -45 * factor]);
-  const nearDrift = useTransform(scrollYProgress, [0, 1], [0, -80 * factor]);
+  const farDrift = useTransform(scrollYProgress, [0, 1], [0, -40 * factor]);
+  const midDrift = useTransform(scrollYProgress, [0, 1], [0, -85 * factor]);
+  const nearDrift = useTransform(scrollYProgress, [0, 1], [0, -140 * factor]);
 
   return (
     <div
@@ -129,18 +129,18 @@ export function ParallaxBackdrop() {
       {/* Far band — deepest, faintest, softest, pushed back + scaled to compensate */}
       <Band
         drift={farDrift}
-        depthClass="opacity-[0.12] blur-[1px] [transform:translateZ(-300px)_scale(1.3)]"
+        depthClass="opacity-[0.2] blur-[1px] [transform:translateZ(-300px)_scale(1.3)]"
       >
         {/* The one mode-aware element: a faint ink-wash blob. currentColor would
             read as dark-on-dark, so it uses an explicit light tint in dark mode. */}
-        <div className="absolute left-[12%] top-[24%] h-72 w-72 rounded-full bg-foreground/[0.04] blur-3xl dark:bg-white/[0.05]" />
+        <div className="absolute left-[12%] top-[24%] h-72 w-72 rounded-full bg-foreground/[0.07] blur-3xl dark:bg-white/[0.08]" />
         <Constellation className="absolute right-[10%] top-[12%] h-24 w-36" />
         <Sparkle className="absolute left-[24%] top-[64%] h-3 w-3" />
         <Sparkle className="absolute right-[28%] top-[88%] h-4 w-4" />
       </Band>
 
       {/* Mid band */}
-      <Band drift={midDrift} depthClass="opacity-[0.18] [transform:translateZ(-150px)_scale(1.15)]">
+      <Band drift={midDrift} depthClass="opacity-[0.28] [transform:translateZ(-150px)_scale(1.15)]">
         <Moon className="absolute left-[8%] top-[8%] h-12 w-12" />
         <Swirl className="absolute right-[14%] top-[40%] h-10 w-16" />
         <Sparkle className="absolute left-[40%] top-[30%] h-4 w-4" />
@@ -149,7 +149,7 @@ export function ParallaxBackdrop() {
       </Band>
 
       {/* Near band — closest, sharpest, drifts most */}
-      <Band drift={nearDrift} depthClass="opacity-25">
+      <Band drift={nearDrift} depthClass="opacity-[0.38]">
         <Sparkle className="absolute left-[30%] top-[16%] h-4 w-4" />
         <Sparkle className="absolute right-[20%] top-[54%] h-5 w-5" />
         <Swirl className="absolute left-[6%] top-[80%] h-8 w-14" />
