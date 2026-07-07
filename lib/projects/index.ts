@@ -1,109 +1,131 @@
-import { GH_API_URL, GH_ACCESS_TOKEN, PROJECTS_CATEGORY_ID } from './client'
-import { projectsQuery } from './gql'
+import { GH_API_URL, GH_ACCESS_TOKEN, PROJECTS_CATEGORY_ID } from './client';
+import { projectsQuery } from './gql';
 
 // Shape matches the global `Work` type used by the projects UI, so GitHub
 // projects merge seamlessly with Sanity ones. `image` is a plain URL string
 // here (Sanity ones are image refs resolved via urlFor).
 export interface GithubProject {
-  _id: string
-  title: string
-  description: string
-  technologies: string[]
-  source: string
-  demo?: string
-  image: string
-  featured: boolean
-  order: number
+	_id: string;
+	title: string;
+	description: string;
+	technologies: string[];
+	source: string;
+	demo?: string;
+	image: string;
+	featured: boolean;
+	order: number;
 }
 
 interface ProjectMeta {
-  technologies?: string[]
-  source?: string
-  demo?: string | null
-  image?: string | null
-  featured?: boolean
-  order?: number
+	technologies?: string[];
+	source?: string;
+	demo?: string | null;
+	image?: string | null;
+	featured?: boolean;
+	order?: number;
+}
+
+// Extracts {owner, repo} from a github.com URL, stripping a trailing .git.
+// Shared by the OG-image fallback, the detail-page slug, and the README fetch.
+export function parseGithubRepo(
+	source: string
+): { owner: string; repo: string } | null {
+	const m = source.match(/github\.com\/([^/]+)\/([^/?#]+)/);
+	if (!m) return null;
+	return { owner: m[1], repo: m[2].replace(/\.git$/, '') };
 }
 
 // GitHub's auto-generated social preview image for a repo, derived from its URL.
 function githubOgImage(source: string): string {
-  const m = source.match(/github\.com\/([^/]+)\/([^/?#]+)/)
-  if (!m) return ''
-  return `https://opengraph.githubassets.com/1/${m[1]}/${m[2].replace(/\.git$/, '')}`
+	const repo = parseGithubRepo(source);
+	if (!repo) return '';
+	return `https://opengraph.githubassets.com/1/${repo.owner}/${repo.repo}`;
+}
+
+// The detail page's URL slug. Repo names are unique across this site's
+// projects today, so no collision handling — falls back to the caller's id
+// only when `source` isn't a recognizable github.com URL.
+export function slugFromSource(source: string, fallback: string): string {
+	const repo = parseGithubRepo(source);
+	return repo ? repo.repo.toLowerCase() : fallback;
 }
 
 function parseMeta(body: string): ProjectMeta {
-  const match = body.match(/<!--\s*proj:(\{[\s\S]*?\})\s*-->/)
-  if (!match) return {}
-  try {
-    return JSON.parse(match[1]) as ProjectMeta
-  } catch {
-    return {}
-  }
+	const match = body.match(/<!--\s*proj:(\{[\s\S]*?\})\s*-->/);
+	if (!match) return {};
+	try {
+		return JSON.parse(match[1]) as ProjectMeta;
+	} catch {
+		return {};
+	}
 }
 
 // Strip the metadata comment to leave a clean description (bodyText already
 // excludes HTML comments, but guard anyway).
 function cleanDescription(bodyText: string): string {
-  return bodyText.replace(/<!--\s*proj:[\s\S]*?-->/, '').trim()
+	return bodyText.replace(/<!--\s*proj:[\s\S]*?-->/, '').trim();
 }
 
 interface ProjectsResponse {
-  repository: {
-    discussions: {
-      nodes: {
-        number: number
-        title: string
-        body: string
-        bodyText: string
-        labels: { nodes: { name: string }[] }
-      }[]
-    }
-  }
+	repository: {
+		discussions: {
+			nodes: {
+				number: number;
+				title: string;
+				body: string;
+				bodyText: string;
+				labels: { nodes: { name: string }[] };
+			}[];
+		};
+	};
 }
 
 export async function getGithubProjects(): Promise<GithubProject[]> {
-  const res = await fetch(GH_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `token ${GH_ACCESS_TOKEN}`,
-    },
-    body: JSON.stringify({ query: projectsQuery(PROJECTS_CATEGORY_ID) }),
-    cache: 'no-store',
-  })
-  const json = await res.json()
-  if (json.errors) {
-    throw new Error(json.errors.map((e: { message: string }) => e.message).join('; '))
-  }
+	const res = await fetch(GH_API_URL, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `token ${GH_ACCESS_TOKEN}`,
+		},
+		body: JSON.stringify({ query: projectsQuery(PROJECTS_CATEGORY_ID) }),
+		cache: 'no-store',
+	});
+	const json = await res.json();
+	if (json.errors) {
+		throw new Error(
+			json.errors.map((e: { message: string }) => e.message).join('; ')
+		);
+	}
 
-  const nodes = (json.data as ProjectsResponse).repository.discussions.nodes ?? []
-  return nodes
-    .map((node): GithubProject | null => {
-      const meta = parseMeta(node.body)
-      const source = meta.source ?? ''
-      if (!source) return null // a project must have a source link
-      const technologies =
-        meta.technologies && meta.technologies.length > 0
-          ? meta.technologies
-          : node.labels.nodes.map((l) => l.name)
-      return {
-        _id: `gh-${node.number}`,
-        title: node.title,
-        description: cleanDescription(node.bodyText),
-        technologies,
-        source,
-        demo: meta.demo ?? undefined,
-        image: meta.image || githubOgImage(source),
-        featured: Boolean(meta.featured),
-        order: typeof meta.order === 'number' ? meta.order : Number.MAX_SAFE_INTEGER,
-      }
-    })
-    .filter((p): p is GithubProject => p !== null)
-    .sort((a, b) => a.order - b.order)
+	const nodes =
+		(json.data as ProjectsResponse).repository.discussions.nodes ?? [];
+	return nodes
+		.map((node): GithubProject | null => {
+			const meta = parseMeta(node.body);
+			const source = meta.source ?? '';
+			if (!source) return null; // a project must have a source link
+			const technologies =
+				meta.technologies && meta.technologies.length > 0
+					? meta.technologies
+					: node.labels.nodes.map(l => l.name);
+			return {
+				_id: `gh-${node.number}`,
+				title: node.title,
+				description: cleanDescription(node.bodyText),
+				technologies,
+				source,
+				demo: meta.demo ?? undefined,
+				image: meta.image || githubOgImage(source),
+				featured: Boolean(meta.featured),
+				order:
+					typeof meta.order === 'number' ? meta.order : Number.MAX_SAFE_INTEGER,
+			};
+		})
+		.filter((p): p is GithubProject => p !== null)
+		.sort((a, b) => a.order - b.order);
 }
 
 // Stable ascending sort by `order`; items without an explicit order sort last.
 export function sortByOrder(projects: GithubProject[]): GithubProject[] {
-  return [...projects].sort((a, b) => a.order - b.order)
+	return [...projects].sort((a, b) => a.order - b.order);
 }
