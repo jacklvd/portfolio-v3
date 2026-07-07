@@ -6,8 +6,10 @@ import { projectsQuery } from './gql';
 // here (Sanity ones are image refs resolved via urlFor).
 export interface GithubProject {
 	_id: string;
+	slug: string;
 	title: string;
 	description: string;
+	detail: string;
 	technologies: string[];
 	source: string;
 	demo?: string;
@@ -66,6 +68,14 @@ function cleanDescription(bodyText: string): string {
 	return bodyText.replace(/<!--\s*proj:[\s\S]*?-->/, '').trim();
 }
 
+// Markdown written after the proj:{...} comment — a hand-authored long-form
+// write-up for the project's detail page. Empty when nothing follows it, so
+// the page falls back to the repo's README (see lib/projects/readme.ts).
+export function parseDetail(body: string): string {
+	const match = body.match(/<!--\s*proj:\{[\s\S]*?\}\s*-->([\s\S]*)/);
+	return match ? match[1].trim() : '';
+}
+
 interface ProjectsResponse {
 	repository: {
 		discussions: {
@@ -110,8 +120,10 @@ export async function getGithubProjects(): Promise<GithubProject[]> {
 					: node.labels.nodes.map(l => l.name);
 			return {
 				_id: `gh-${node.number}`,
+				slug: slugFromSource(source, `gh-${node.number}`),
 				title: node.title,
 				description: cleanDescription(node.bodyText),
+				detail: parseDetail(node.body),
 				technologies,
 				source,
 				demo: meta.demo ?? undefined,

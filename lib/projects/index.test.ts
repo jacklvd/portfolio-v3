@@ -3,14 +3,17 @@ import {
 	sortByOrder,
 	parseGithubRepo,
 	slugFromSource,
+	parseDetail,
 	type GithubProject,
 } from './index';
 
 function mk(title: string, order?: number): GithubProject {
 	return {
 		_id: `gh-${title}`,
+		slug: title,
 		title,
 		description: '',
+		detail: '',
 		technologies: [],
 		source: 'https://github.com/x/y',
 		image: '',
@@ -57,5 +60,23 @@ describe('slugFromSource', () => {
 
 	it('falls back when the source is not a github.com URL', () => {
 		expect(slugFromSource('https://gitlab.com/x/y', 'gh-3')).toBe('gh-3');
+	});
+});
+
+describe('parseDetail', () => {
+	it('returns the markdown after the proj comment, trimmed', () => {
+		const body =
+			'Short desc\n\n<!-- proj:{"source":"https://github.com/x/y"} -->\n\n## More\nExtra detail.';
+		expect(parseDetail(body)).toBe('## More\nExtra detail.');
+	});
+
+	it('returns an empty string when there is no proj comment', () => {
+		expect(parseDetail('Just a description, no metadata.')).toBe('');
+	});
+
+	it('returns an empty string when nothing follows the comment', () => {
+		const body =
+			'Short desc\n\n<!-- proj:{"source":"https://github.com/x/y"} -->';
+		expect(parseDetail(body)).toBe('');
 	});
 });
