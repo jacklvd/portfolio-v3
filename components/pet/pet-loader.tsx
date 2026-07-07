@@ -1,91 +1,177 @@
 'use client';
 
-// Pet-themed preloader: the ink-doodle creature walks across a progress line
-// while a counter ticks to 100, then the whole screen slides away. Drop-in
-// replacement for the old <Preloader> — same `onComplete` contract.
+// Pet-themed preloader that ends as a book cover: the ink-doodle creature draws
+// a wavy ink line across blank paper while a counter ticks to 100 and
+// handwritten storybook captions cycle underneath. It hops once mid-walk,
+// celebrates at 100, sprints off the right edge of the screen, then the whole
+// screen — counter and all — turns open like a front cover hinged at the left
+// edge, revealing the page behind. `onOpen` fires the moment the cover starts
+// moving so the hero can choreograph its reveal underneath. Stays mounted and
+// renders nothing once fully open.
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PetSprite } from './pet-sprite';
 import { HAT_STORAGE_KEY, type HatId, HAT_IDS } from './hats';
+import { WavyDivider } from '@/components/effects/wavy-frame';
 
 interface PetLoaderProps {
-  onComplete: () => void;
+	onOpen: () => void;
 }
 
-export default function PetLoader({ onComplete }: PetLoaderProps) {
-  const [count, setCount] = useState(0);
-  const [visible, setVisible] = useState(true);
-  const [hat, setHat] = useState<HatId>('none');
-  const rafRef = useRef<number | null>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+const COVER_EASE = [0.645, 0.045, 0.355, 1];
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(HAT_STORAGE_KEY) as HatId | null;
-      if (saved && HAT_IDS.includes(saved)) setHat(saved);
-    } catch {
-      /* ignore */
-    }
+const CAPTIONS = [
+	'inking the pages…',
+	'sewing the spine…',
+	'waking the pet…',
+	'dusting the cover…',
+];
 
-    const duration = 2200;
-    const startTime = performance.now();
-    const tick = (nowTs: number) => {
-      const t = Math.min((nowTs - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 4);
-      setCount(Math.round(eased * 100));
-      if (t < 1) rafRef.current = requestAnimationFrame(tick);
-      else timeoutRef.current = setTimeout(() => setVisible(false), 450);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-      if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
-    };
-  }, []);
+// walk → (midhop) → walk → celebrate → sprint → open
+type Stage = 'walk' | 'midhop' | 'celebrate' | 'sprint' | 'open';
 
-  return (
-    <AnimatePresence onExitComplete={onComplete}>
-      {visible && (
-        <motion.div
-          key="pet-loader"
-          className="fixed inset-0 z-[9999] flex select-none flex-col items-center justify-center gap-10 bg-background"
-          exit={{ y: '-100%', transition: { duration: 0.85, ease: [0.76, 0, 0.24, 1] } }}
-        >
-          <span className="font-light tabular-nums text-7xl leading-none text-foreground sm:text-8xl">
-            {String(count).padStart(3, '0')}
-          </span>
+export default function PetLoader({ onOpen }: PetLoaderProps) {
+	const [count, setCount] = useState(0);
+	const [caption, setCaption] = useState(0);
+	const [stage, setStage] = useState<Stage>('walk');
+	const [hat, setHat] = useState<HatId>('none');
+	const rafRef = useRef<number | null>(null);
+	const hopped = useRef(false);
 
-          {/* Walk track */}
-          <div className="w-64 sm:w-80">
-            {/* The bar is the pet's "floor": it stands on top and walks along
-                the leading edge of the fill as it grows. */}
-            <div className="relative h-[3px] w-full">
-              <div className="h-full w-full overflow-hidden bg-foreground/10">
-                <motion.div
-                  className="h-full origin-left bg-foreground"
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: count / 100 }}
-                  transition={{ duration: 0, ease: 'linear' }}
-                />
-              </div>
-              <div
-                className="absolute text-foreground"
-                style={{
-                  left: `calc(${count}% - 24px)`,
-                  bottom: 'calc(100% - 5px)', // seat the feet on the line
-                  transition: 'left 0.05s linear',
-                }}
-              >
-                <PetSprite mode="walk" facing={1} hat={hat} className="h-12 w-12" />
-              </div>
-            </div>
-            <span className="mt-3 block text-right text-[0.6rem] font-light uppercase tracking-[0.5em] text-muted-foreground">
-              loading
-            </span>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+	useEffect(() => {
+		try {
+			const saved = localStorage.getItem(HAT_STORAGE_KEY) as HatId | null;
+			if (saved && HAT_IDS.includes(saved)) setHat(saved);
+		} catch {
+			/* ignore */
+		}
+
+		const duration = 2200;
+		const startTime = performance.now();
+		const tick = (nowTs: number) => {
+			const t = Math.min((nowTs - startTime) / duration, 1);
+			const eased = 1 - Math.pow(1 - t, 4);
+			const c = Math.round(eased * 100);
+			setCount(c);
+			setCaption(
+				Math.min(Math.floor(t * CAPTIONS.length), CAPTIONS.length - 1)
+			);
+			// One playful hop partway along the line
+			if (!hopped.current && c >= 75) {
+				hopped.current = true;
+				setStage(s => (s === 'walk' ? 'midhop' : s));
+			}
+			if (t < 1) rafRef.current = requestAnimationFrame(tick);
+			else setStage(s => (s === 'open' ? s : 'celebrate'));
+		};
+		rafRef.current = requestAnimationFrame(tick);
+		return () => {
+			if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+		};
+	}, []);
+
+	const petAnim =
+		stage === 'midhop'
+			? { y: [0, -9, 0] }
+			: stage === 'celebrate'
+				? { y: [0, -14, 0, -8, 0] }
+				: stage === 'sprint'
+					? { x: '110vw' }
+					: undefined;
+
+	const petTransition =
+		stage === 'midhop'
+			? { duration: 0.4, ease: 'easeOut' as const }
+			: stage === 'celebrate'
+				? { duration: 0.6, ease: 'easeOut' as const }
+				: { duration: 0.8, ease: 'easeIn' as const };
+
+	return (
+		<AnimatePresence>
+			{stage !== 'open' && (
+				<motion.div
+					key="pet-loader"
+					className="fixed inset-0 z-[9999] select-none"
+					style={{ perspective: 1400 }}
+				>
+					{/* The whole screen is the book's front cover: hinged at the left
+              edge, it turns toward the reader with its content still on it.
+              backface-visibility makes it vanish naturally past edge-on. */}
+					<motion.div
+						className="absolute inset-0 flex origin-left flex-col items-center justify-center gap-10 bg-background"
+						style={{ backfaceVisibility: 'hidden' }}
+						exit={{
+							rotateY: -105,
+							transition: { duration: 1.0, ease: COVER_EASE },
+						}}
+					>
+						{/* Binding shadow — appears at the hinge as the cover lifts */}
+						<motion.span
+							aria-hidden
+							className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-foreground/15 to-transparent"
+							initial={{ opacity: 0 }}
+							exit={{ opacity: 1, transition: { duration: 0.4 } }}
+						/>
+						<span className="font-title tabular-nums text-7xl leading-none text-foreground sm:text-8xl">
+							{String(count).padStart(3, '0')}
+						</span>
+
+						{/* Walk track — the pet draws the wavy ink line behind it */}
+						<div className="w-64 sm:w-80">
+							<div className="relative h-3 w-full">
+								<div
+									className="absolute inset-y-0 left-0 overflow-hidden"
+									style={{
+										width: `${count}%`,
+										transition: 'width 0.05s linear',
+									}}
+								>
+									<div className="w-64 sm:w-80">
+										<WavyDivider className="!text-foreground/60" />
+									</div>
+								</div>
+								<motion.div
+									className="absolute text-foreground"
+									style={{
+										left: `calc(${count}% - 24px)`,
+										bottom: 'calc(100% - 6px)', // seat the feet on the ink line
+										transition: 'left 0.05s linear',
+									}}
+									animate={petAnim}
+									transition={petTransition}
+									onAnimationComplete={() => {
+										// Functional update so a stale closure can't rewind the stage
+										setStage(s => {
+											if (s === 'midhop') return 'walk';
+											if (s === 'celebrate') return 'sprint';
+											if (s === 'sprint') {
+												onOpen();
+												return 'open';
+											}
+											return s;
+										});
+									}}
+								>
+									<PetSprite
+										mode={
+											stage === 'midhop' || stage === 'celebrate'
+												? 'hop'
+												: 'walk'
+										}
+										facing={1}
+										hat={hat}
+										className="h-12 w-12"
+									/>
+								</motion.div>
+							</div>
+							<span className="mt-3 block text-right font-hand text-base text-muted-foreground">
+								{CAPTIONS[caption]}
+							</span>
+						</div>
+					</motion.div>
+				</motion.div>
+			)}
+		</AnimatePresence>
+	);
 }
