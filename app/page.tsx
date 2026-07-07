@@ -83,8 +83,7 @@ export default function Home() {
 	const open = useEntranceOpen();
 	const [writerOn, setWriterOn] = useState(false);
 	const socials = Object.entries(data.social);
-	let stickerIndex = 0;
-	const cascade = () => STICKER_BASE_DELAY + stickerIndex++ * STICKER_STEP;
+	const cascade = (i: number) => STICKER_BASE_DELAY + i * STICKER_STEP;
 
 	return (
 		<div className="relative isolate min-h-screen overflow-hidden">
@@ -116,7 +115,7 @@ export default function Home() {
 						left="32%"
 						width={172}
 						rotate={-4}
-						enterDelay={cascade()}
+						enterDelay={cascade(0)}
 					>
 						<div className="flex flex-col items-center justify-center gap-1 px-5 py-5">
 							<span className="font-title text-4xl leading-none text-stone-800">
@@ -134,7 +133,7 @@ export default function Home() {
 						left="21%"
 						width={196}
 						rotate={3}
-						enterDelay={cascade()}
+						enterDelay={cascade(1)}
 					>
 						<div className="flex flex-col gap-2 px-4 py-3">
 							{[
@@ -160,7 +159,7 @@ export default function Home() {
 						right="22%"
 						width={170}
 						rotate={4}
-						enterDelay={cascade()}
+						enterDelay={cascade(2)}
 					>
 						<div className="flex flex-col items-center justify-center gap-1.5 px-4 py-4">
 							<span className="font-title text-3xl text-stone-800">
@@ -181,7 +180,7 @@ export default function Home() {
 						right="18%"
 						width={184}
 						rotate={-3}
-						enterDelay={cascade()}
+						enterDelay={cascade(3)}
 					>
 						<div className="flex flex-col gap-1 px-4 py-3">
 							{[
@@ -207,7 +206,7 @@ export default function Home() {
 						right="28%"
 						width={168}
 						rotate={5}
-						enterDelay={cascade()}
+						enterDelay={cascade(4)}
 					>
 						<div className="flex flex-col items-center justify-center gap-2 px-4 py-4">
 							<span className="text-3xl leading-none">🍜</span>
