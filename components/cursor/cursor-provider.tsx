@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import React, {
@@ -18,9 +19,9 @@ type CursorContextType = {
 
 const CursorContext = createContext<CursorContextType>({
   enabled: true,
-  enableCustomCursor: () => {},
-  disableCustomCursor: () => {},
-  toggleCustomCursor: () => {},
+  enableCustomCursor: () => { },
+  disableCustomCursor: () => { },
+  toggleCustomCursor: () => { },
 })
 
 export const useCursor = () => useContext(CursorContext)
