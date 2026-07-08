@@ -81,4 +81,48 @@ describe('fetchReadme', () => {
 		const result = await fetchReadme('https://github.com/jacklvd/lifepub');
 		expect(result).toBe('![alt text](https://example.com/image.png)');
 	});
+
+	it('leaves protocol-relative image URLs untouched', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				text: () => Promise.resolve('![alt text](//example.com/image.png)'),
+			})
+		);
+		const result = await fetchReadme('https://github.com/jacklvd/lifepub');
+		expect(result).toBe('![alt text](//example.com/image.png)');
+	});
+
+	it('leaves data URIs untouched', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				text: () =>
+					Promise.resolve('![alt text](data:image/png;base64,abc123)'),
+			})
+		);
+		const result = await fetchReadme('https://github.com/jacklvd/lifepub');
+		expect(result).toBe('![alt text](data:image/png;base64,abc123)');
+	});
+
+	it('rewrites every relative image in a multi-image README', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				text: () =>
+					Promise.resolve(
+						'![one](assets/a.png)\n\ntext\n\n![two](assets/b.png)'
+					),
+			})
+		);
+		const result = await fetchReadme('https://github.com/jacklvd/lifepub');
+		expect(result).toBe(
+			'![one](https://raw.githubusercontent.com/jacklvd/lifepub/HEAD/assets/a.png)\n\n' +
+				'text\n\n' +
+				'![two](https://raw.githubusercontent.com/jacklvd/lifepub/HEAD/assets/b.png)'
+		);
+	});
 });
