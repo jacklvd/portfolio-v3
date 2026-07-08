@@ -40,4 +40,45 @@ describe('fetchReadme', () => {
 		const result = await fetchReadme('https://github.com/jacklvd/arch-sketch');
 		expect(result).toBe('');
 	});
+
+	it('rewrites a repo-relative image path to raw.githubusercontent.com', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				text: () => Promise.resolve('![alt text](assets/image.png)'),
+			})
+		);
+		const result = await fetchReadme('https://github.com/jacklvd/lifepub');
+		expect(result).toBe(
+			'![alt text](https://raw.githubusercontent.com/jacklvd/lifepub/HEAD/assets/image.png)'
+		);
+	});
+
+	it('strips a leading slash from a repo-root-relative image path', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				text: () => Promise.resolve('![alt text](/assets/image.png)'),
+			})
+		);
+		const result = await fetchReadme('https://github.com/jacklvd/lifepub');
+		expect(result).toBe(
+			'![alt text](https://raw.githubusercontent.com/jacklvd/lifepub/HEAD/assets/image.png)'
+		);
+	});
+
+	it('leaves already-absolute image URLs untouched', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				text: () =>
+					Promise.resolve('![alt text](https://example.com/image.png)'),
+			})
+		);
+		const result = await fetchReadme('https://github.com/jacklvd/lifepub');
+		expect(result).toBe('![alt text](https://example.com/image.png)');
+	});
 });
