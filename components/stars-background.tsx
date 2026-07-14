@@ -1,5 +1,6 @@
 'use client'
 import { useMemo } from 'react'
+import { seededRandom } from '@/lib/seeded-random'
 
 type Star = {
   id: number
@@ -9,11 +10,6 @@ type Star = {
   delay: number
   duration: number
   opacity: number
-}
-
-function seededRandom(seed: number) {
-  const x = Math.sin(seed) * 10000
-  return x - Math.floor(x)
 }
 
 export function StarsBackground() {

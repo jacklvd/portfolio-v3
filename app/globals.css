@@ -582,14 +582,6 @@ img {
 		color: #475569 !important;
 	}
 
-	.light .hover\\:border-gray-400:hover {
-		border-color: #64748b !important;
-	}
-
-	.light .hover\\:bg-gray-700:hover {
-		background-color: #e2e8f0 !important;
-	}
-
 	.light .text-green-400 {
 		color: #1a1a1a !important;
 	}
@@ -626,24 +618,6 @@ img {
 
 	.light .bg-yellow-400 {
 		background-color: #d97706 !important;
-		color: #ffffff !important;
-	}
-
-	.light .hover\\:bg-yellow-400:hover {
-		background-color: #059669 !important;
-		color: #ffffff !important;
-	}
-
-	.light .hover\\:bg-cyan-400:hover {
-		background-color: #059669 !important;
-		color: #ffffff !important;
-	}
-
-	.light .hover\\:border-yellow-400:hover {
-		border-color: #059669 !important;
-	}
-
-	.light .hover\\:text-black:hover {
 		color: #ffffff !important;
 	}
 
@@ -685,14 +659,6 @@ img {
 
 	.light .border-yellow-400 {
 		border-color: #d97706 !important;
-	}
-
-	.light .hover\\:border-green-400:hover {
-		border-color: #059669 !important;
-	}
-
-	.light .hover\\:border-cyan-400:hover {
-		border-color: #1e40af !important;
 	}
 }
 

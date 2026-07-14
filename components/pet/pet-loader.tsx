@@ -35,18 +35,35 @@ export default function PetLoader({ onOpen }: PetLoaderProps) {
 	const [count, setCount] = useState(0);
 	const [caption, setCaption] = useState(0);
 	const [stage, setStage] = useState<Stage>('walk');
-	const [hat, setHat] = useState<HatId>('none');
+	// Read once on mount rather than from an effect: an effect would render the
+	// default hat first and then swap it, and cascading renders are exactly what
+	// react-hooks/set-state-in-effect flags. Safe to touch localStorage here
+	// because the parent only mounts PetLoader once it's client-side, so this
+	// never runs during SSR.
+	const [hat] = useState<HatId>(() => {
+		try {
+			const saved = localStorage.getItem(HAT_STORAGE_KEY) as HatId | null;
+			return saved && HAT_IDS.includes(saved) ? saved : 'none';
+		} catch {
+			return 'none';
+		}
+	});
 	const rafRef = useRef<number | null>(null);
 	const hopped = useRef(false);
 
+	// Parent passes an inline arrow, so hold it in a ref: the open effect should
+	// fire on the stage transition, not on every re-render of the parent.
+	const onOpenRef = useRef(onOpen);
 	useEffect(() => {
-		try {
-			const saved = localStorage.getItem(HAT_STORAGE_KEY) as HatId | null;
-			if (saved && HAT_IDS.includes(saved)) setHat(saved);
-		} catch {
-			/* ignore */
-		}
+		onOpenRef.current = onOpen;
+	});
 
+	// The cover starts turning as we enter 'open'; tell the hero to reveal.
+	useEffect(() => {
+		if (stage === 'open') onOpenRef.current();
+	}, [stage]);
+
+	useEffect(() => {
 		const duration = 2200;
 		const startTime = performance.now();
 		const tick = (nowTs: number) => {
@@ -141,14 +158,13 @@ export default function PetLoader({ onOpen }: PetLoaderProps) {
 									animate={petAnim}
 									transition={petTransition}
 									onAnimationComplete={() => {
-										// Functional update so a stale closure can't rewind the stage
+										// Functional update so a stale closure can't rewind the stage.
+										// Must stay pure — React may run updaters during render, so
+										// onOpen() fires from an effect once we reach 'open' instead.
 										setStage(s => {
 											if (s === 'midhop') return 'walk';
 											if (s === 'celebrate') return 'sprint';
-											if (s === 'sprint') {
-												onOpen();
-												return 'open';
-											}
+											if (s === 'sprint') return 'open';
 											return s;
 										});
 									}}
