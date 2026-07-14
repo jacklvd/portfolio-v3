@@ -35,7 +35,19 @@ export default function PetLoader({ onOpen }: PetLoaderProps) {
 	const [count, setCount] = useState(0);
 	const [caption, setCaption] = useState(0);
 	const [stage, setStage] = useState<Stage>('walk');
-	const [hat, setHat] = useState<HatId>('none');
+	// Read once on mount rather than from an effect: an effect would render the
+	// default hat first and then swap it, and cascading renders are exactly what
+	// react-hooks/set-state-in-effect flags. Safe to touch localStorage here
+	// because the parent only mounts PetLoader once it's client-side, so this
+	// never runs during SSR.
+	const [hat] = useState<HatId>(() => {
+		try {
+			const saved = localStorage.getItem(HAT_STORAGE_KEY) as HatId | null;
+			return saved && HAT_IDS.includes(saved) ? saved : 'none';
+		} catch {
+			return 'none';
+		}
+	});
 	const rafRef = useRef<number | null>(null);
 	const hopped = useRef(false);
 
@@ -52,13 +64,6 @@ export default function PetLoader({ onOpen }: PetLoaderProps) {
 	}, [stage]);
 
 	useEffect(() => {
-		try {
-			const saved = localStorage.getItem(HAT_STORAGE_KEY) as HatId | null;
-			if (saved && HAT_IDS.includes(saved)) setHat(saved);
-		} catch {
-			/* ignore */
-		}
-
 		const duration = 2200;
 		const startTime = performance.now();
 		const tick = (nowTs: number) => {
