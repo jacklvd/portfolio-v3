@@ -55,6 +55,7 @@ export function About() {
                 src="/images/hero.jpeg"
                 alt="Jack Vo"
                 fill
+                sizes="(min-width: 1024px) 40vw, 100vw"
                 className="object-cover transition-all duration-500 ease-out
                   group-hover:saturate-[1.2] group-hover:brightness-[1.04]
                   motion-safe:group-hover:scale-[1.06] motion-safe:group-hover:-rotate-1"

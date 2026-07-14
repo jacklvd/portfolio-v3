@@ -38,6 +38,7 @@ export function ProjectDetailView({ project, body }: ProjectDetailViewProps) {
 								src={project.image}
 								alt={project.title}
 								fill
+								sizes="(min-width: 1152px) 1024px, 100vw"
 								className="object-cover"
 							/>
 						</div>
