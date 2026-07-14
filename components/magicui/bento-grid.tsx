@@ -13,7 +13,8 @@ interface BentoCardProps extends ComponentPropsWithoutRef<'div'> {
   name: string
   className: string
   background: ReactNode
-  Icon: React.ElementType
+  // React 19 types: bare `ElementType` collapses `className` to `never` in JSX.
+  Icon: React.ComponentType<{ className?: string }>
   description: string
   href: string
   cta: string

@@ -8,12 +8,13 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 interface ProjectDetailPageProps {
-	params: { slug: string };
+	params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({
-	params,
-}: ProjectDetailPageProps): Promise<Metadata> {
+export async function generateMetadata(
+	props: ProjectDetailPageProps
+): Promise<Metadata> {
+	const params = await props.params;
 	const projects = await getGithubProjects();
 	const project = projects.find(p => p.slug === params.slug);
 	if (!project) {
@@ -25,9 +26,8 @@ export async function generateMetadata({
 	};
 }
 
-export default async function ProjectDetailPage({
-	params,
-}: ProjectDetailPageProps) {
+export default async function ProjectDetailPage(props: ProjectDetailPageProps) {
+	const params = await props.params;
 	const projects = await getGithubProjects();
 	const project = projects.find(p => p.slug === params.slug);
 	if (!project) notFound();
