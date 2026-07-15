@@ -44,8 +44,8 @@ export function About() {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-14 lg:gap-20">
         {/* Photo + Spotify */}
-        {/* `relative` so useScroll's target has a positioned offsetParent to
-            measure against — otherwise it resolves to the static <body>. */}
+        {/* `relative` positions the sparkle overlay + portrait stack. (The
+            useScroll container warning is fixed on <html> in globals.css.) */}
         <motion.div {...inView(0.1)} className="relative lg:col-span-2 flex flex-col gap-6">
           <div ref={portraitRef} className="group relative aspect-[3/4] p-2">
             <WavyBorder className="rounded-[1.4rem] border border-foreground/30 shadow-[12px_12px_0_#e0e0e0] dark:shadow-[12px_12px_0_rgba(255,255,255,0.07)] transition-colors duration-300 group-hover:border-foreground/50" />

@@ -70,6 +70,9 @@
 
 html {
 	scroll-behavior: smooth;
+	/* Non-static so framer-motion's window-based useScroll({ target }) can measure
+	   scroll offsets against the root container (it's static by default). */
+	position: relative;
 }
 
 .section {
