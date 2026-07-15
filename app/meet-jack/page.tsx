@@ -23,6 +23,10 @@ export default function Portfolio() {
 
 	// Set isMounted to true on mount and check screen width
 	useEffect(() => {
+		// Intentional mount guard: the component renders null on the server / first
+		// paint (see `if (!isMounted)` below) to avoid a hydration mismatch, so this
+		// one-time flip is by design rather than an avoidable cascading render.
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setIsMounted(true);
 
 		// Check if screen width is 375px or less
@@ -59,6 +63,40 @@ export default function Portfolio() {
 			console.error('Scroll event error:', error);
 		}
 	}, [isMounted, isMobile]);
+
+	// Honor an incoming hash (e.g. /meet-jack#work from "Back to projects").
+	// The page renders behind a loading gate and the sections above #work fetch
+	// async, so the browser's native hash scroll fires before the target exists or
+	// settles. Re-align each frame until the target's position holds steady.
+	useEffect(() => {
+		if (!isMounted || isLoading) return;
+		const id = window.location.hash.slice(1);
+		if (!id) return;
+
+		let raf = 0;
+		let lastTop = NaN;
+		let stableFrames = 0;
+		let frames = 0;
+		const align = () => {
+			const el = document.getElementById(id);
+			if (el) {
+				// Measure BEFORE scrolling: this reads where the target sits under the
+				// current layout, so frame-to-frame drift (async content settling above)
+				// resets the counter. `behavior: 'auto'` overrides the global smooth
+				// scroll so the align is instant and the stability check is deterministic.
+				const top = el.getBoundingClientRect().top;
+				el.scrollIntoView({ block: 'start', behavior: 'auto' });
+				stableFrames = Math.abs(top - lastTop) < 1 ? stableFrames + 1 : 0;
+				lastTop = top;
+			}
+			// Stop once settled (5 steady frames) or after ~2s, so a missing/stale hash
+			// target or an ever-animating section can't spin the rAF loop forever.
+			if (stableFrames < 5 && frames++ < 120)
+				raf = requestAnimationFrame(align);
+		};
+		raf = requestAnimationFrame(align);
+		return () => cancelAnimationFrame(raf);
+	}, [isMounted, isLoading]);
 
 	const scrollToTop = () => {
 		try {
