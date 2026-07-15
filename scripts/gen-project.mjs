@@ -15,7 +15,7 @@
 import { writeFileSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { GoogleGenAI } from '@google/genai';
 import { InferenceClient } from '@huggingface/inference';
 
@@ -129,6 +129,8 @@ async function graphql(query, variables) {
 		},
 		body: JSON.stringify({ query, variables }),
 	});
+	if (!res.ok)
+		throw new Error(`GitHub GraphQL ${res.status}: ${(await res.text()).slice(0, 200)}`);
 	const json = await res.json();
 	if (json.errors) throw new Error(JSON.stringify(json.errors));
 	return json.data;
@@ -141,6 +143,8 @@ async function ghRest(path) {
 			...(GH_TOKEN ? { Authorization: `token ${GH_TOKEN}` } : {}),
 		},
 	});
+	// Non-fatal, but warn so degraded repo context (e.g. a 403 rate-limit) isn't invisible.
+	if (!res.ok) console.warn(`  ⚠ GitHub ${path} → ${res.status}`);
 	return res.ok ? res.json() : null;
 }
 
@@ -329,7 +333,9 @@ async function main() {
 }
 
 // Only run when executed directly, so the test can import the pure helpers.
-if (import.meta.url === `file://${process.argv[1]}`) {
+// pathToFileURL handles spaces/special chars in the path (a raw `file://` + path
+// concat would mis-compare and either skip main() or run it during test import).
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
 	main().catch(err => {
 		console.error(err.message);
 		process.exit(1);
