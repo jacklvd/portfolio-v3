@@ -2,6 +2,14 @@
 
 Personal portfolio for Jack Vo — Software Engineer. A hand-drawn **"magic book"** themed site: wavy ink borders, script display fonts, paper-scrap stickers, and a little ink-doodle pet that wanders the page.
 
+[![Live](https://img.shields.io/badge/live-jackvd.com-ff69b4?style=flat-square)](https://jackvd.com)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Deployed on Vercel](https://img.shields.io/badge/deployed%20on-Vercel-000000?style=flat-square&logo=vercel)](https://vercel.com)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow?style=flat-square)](./LICENSE)
+
 Live at [jackvd.com](https://jackvd.com).
 
 ## Highlights
@@ -15,22 +23,22 @@ Live at [jackvd.com](https://jackvd.com).
 
 ## Stack
 
-| Layer | Technology |
-| --- | --- |
-| Framework | Next.js 14 (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS |
-| Animation | Framer Motion / Motion |
-| 3D | Three.js, React Three Fiber, Drei |
-| UI Primitives | Radix UI (shadcn/ui) |
-| Data | Sanity CMS + GitHub Discussions (GraphQL) |
-| Forms | React Hook Form + Zod |
-| Theme | next-themes |
-| Icons | Lucide, Radix Icons, Tabler |
+| Layer         | Technology                                |
+| ------------- | ----------------------------------------- |
+| Framework     | Next.js 16 (App Router)                   |
+| Language      | TypeScript                                |
+| Styling       | Tailwind CSS                              |
+| Animation     | Framer Motion / Motion                    |
+| 3D            | Three.js, React Three Fiber, Drei         |
+| UI Primitives | Radix UI (shadcn/ui)                      |
+| Data          | Sanity CMS + GitHub Discussions (GraphQL) |
+| Forms         | React Hook Form + Zod                     |
+| Theme         | next-themes                               |
+| Icons         | Lucide, Radix Icons, Tabler               |
 
 ## Getting started
 
-**Prerequisites:** Node.js 18+, Yarn
+**Prerequisites:** Node.js 22+, Yarn
 
 ```bash
 git clone https://github.com/jacklvd/portfolio-v3.git
@@ -88,6 +96,8 @@ yarn start         # production server
 yarn lint          # ESLint
 yarn format        # Prettier (write)
 yarn format:check  # Prettier (check)
+yarn test          # Vitest
+yarn gen-project   # generate a project entry (Gemini + HF FLUX images)
 ```
 
 ## Project structure
