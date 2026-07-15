@@ -60,6 +60,33 @@ export default function Portfolio() {
 		}
 	}, [isMounted, isMobile]);
 
+	// Honor an incoming hash (e.g. /meet-jack#work from "Back to projects").
+	// The page renders behind a loading gate and the sections above #work fetch
+	// async, so the browser's native hash scroll fires before the target exists or
+	// settles. Re-align each frame until the target's position holds steady.
+	// dev-note: rAF settle loop; if a section animates in for >2s, raise the frame budget.
+	useEffect(() => {
+		if (!isMounted || isLoading) return;
+		const id = window.location.hash.slice(1);
+		if (!id) return;
+
+		let raf = 0;
+		let lastTop = NaN;
+		let stableFrames = 0;
+		const align = () => {
+			const el = document.getElementById(id);
+			if (el) {
+				const top = el.getBoundingClientRect().top;
+				el.scrollIntoView({ block: 'start' });
+				stableFrames = Math.abs(top - lastTop) < 1 ? stableFrames + 1 : 0;
+				lastTop = top;
+			}
+			if (stableFrames < 5) raf = requestAnimationFrame(align);
+		};
+		raf = requestAnimationFrame(align);
+		return () => cancelAnimationFrame(raf);
+	}, [isMounted, isLoading]);
+
 	const scrollToTop = () => {
 		try {
 			window.scrollTo({
