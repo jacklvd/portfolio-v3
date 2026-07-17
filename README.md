@@ -1,6 +1,6 @@
 # jackvd.com
 
-Personal portfolio for Jack Vo — Software Engineer. A hand-drawn **"magic book"** themed site: wavy ink borders, script display fonts, paper-scrap stickers, and a little ink-doodle pet that wanders the page.
+Personal portfolio for Jack Vo — Software Engineer ^^. A hand-drawn **"magic book"** themed site: wavy ink borders, script display fonts, paper-scrap stickers, and a little ink-doodle pet that wanders the page.
 
 [![Live](https://img.shields.io/badge/live-jackvd.com-ff69b4?style=flat-square)](https://jackvd.com)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org)
