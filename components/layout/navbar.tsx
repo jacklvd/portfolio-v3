@@ -63,7 +63,7 @@ export const NavBar = () => {
 							href={item.href}
 							className={cn(
 								buttonVariants({ variant: 'ghost', size: 'icon' }),
-								'size-10 relative transition-colors duration-200 hover:text-foreground',
+								'size-10 relative rounded-full transition-colors duration-200 hover:bg-foreground/10 hover:text-foreground',
 								pathname === item.href
 									? 'text-foreground'
 									: 'text-foreground/40'
@@ -85,7 +85,7 @@ export const NavBar = () => {
 								href={social.url}
 								className={cn(
 									buttonVariants({ variant: 'ghost', size: 'icon' }),
-									'size-10 text-foreground/40 transition-colors duration-200 hover:text-foreground'
+									'size-10 rounded-full text-foreground/40 transition-colors duration-200 hover:bg-foreground/10 hover:text-foreground'
 								)}
 								target="_blank"
 								rel="noopener noreferrer"
