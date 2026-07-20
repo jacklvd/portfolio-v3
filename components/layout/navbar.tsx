@@ -58,45 +58,41 @@ export const NavBar = () => {
 					className="rounded-2xl border border-border dark:border-white/10"
 				/>
 				{data.navbar.map(item => (
-					<motion.div key={item.href} variants={itemVariants}>
-						<DockIcon title={item.title}>
-							<Link
-								href={item.href}
-								className={cn(
-									buttonVariants({ variant: 'ghost', size: 'icon' }),
-									'size-10 relative transition-colors duration-200 hover:text-foreground',
-									pathname === item.href
-										? 'text-foreground'
-										: 'text-foreground/40'
-								)}
-							>
-								<item.icon className="size-5" />
-								{pathname === item.href && (
-									<span className="absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-foreground" />
-								)}
-							</Link>
-						</DockIcon>
-					</motion.div>
+					<DockIcon key={item.href} title={item.title} variants={itemVariants}>
+						<Link
+							href={item.href}
+							className={cn(
+								buttonVariants({ variant: 'ghost', size: 'icon' }),
+								'size-10 relative transition-colors duration-200 hover:text-foreground',
+								pathname === item.href
+									? 'text-foreground'
+									: 'text-foreground/40'
+							)}
+						>
+							<item.icon className="size-5" />
+							{pathname === item.href && (
+								<span className="absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-foreground" />
+							)}
+						</Link>
+					</DockIcon>
 				))}
 				<Separator orientation="vertical" className="h-full" />
 				{Object.entries(data.social)
 					.filter(([_, social]) => social.navbar)
 					.map(([name, social]) => (
-						<motion.div key={name} variants={itemVariants}>
-							<DockIcon title={name}>
-								<Link
-									href={social.url}
-									className={cn(
-										buttonVariants({ variant: 'ghost', size: 'icon' }),
-										'size-10 text-foreground/40 transition-colors duration-200 hover:text-foreground'
-									)}
-									target="_blank"
-									rel="noopener noreferrer"
-								>
-									<social.icon className="size-5" />
-								</Link>
-							</DockIcon>
-						</motion.div>
+						<DockIcon key={name} title={name} variants={itemVariants}>
+							<Link
+								href={social.url}
+								className={cn(
+									buttonVariants({ variant: 'ghost', size: 'icon' }),
+									'size-10 text-foreground/40 transition-colors duration-200 hover:text-foreground'
+								)}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<social.icon className="size-5" />
+							</Link>
+						</DockIcon>
 					))}
 			</Dock>
 		</motion.div>
