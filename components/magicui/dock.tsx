@@ -49,6 +49,14 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
 		ref
 	) => {
 		const mouseX = useMotionValue(Infinity);
+		// Touch devices emulate mousemove on tap but never fire mouseleave, so a
+		// tapped icon would stay stuck magnified. Only wire magnification for real
+		// hover-capable pointers; elsewhere mouseX stays Infinity → icons rest flat.
+		const [canHover] = useState(
+			() =>
+				typeof window !== 'undefined' &&
+				window.matchMedia('(hover: hover) and (pointer: fine)').matches
+		);
 
 		const renderChildren = () => {
 			return React.Children.map(children, child => {
@@ -62,6 +70,7 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
 						size: iconSize,
 						magnification: iconMagnification,
 						distance: iconDistance,
+						canHover: canHover,
 					});
 				}
 				return child;
@@ -71,8 +80,8 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
 		return (
 			<motion.div
 				ref={ref}
-				onMouseMove={e => mouseX.set(e.pageX)}
-				onMouseLeave={() => mouseX.set(Infinity)}
+				onMouseMove={canHover ? e => mouseX.set(e.pageX) : undefined}
+				onMouseLeave={canHover ? () => mouseX.set(Infinity) : undefined}
 				{...props}
 				className={cn(dockVariants({ className }), {
 					'items-start': direction === 'top',
@@ -97,6 +106,8 @@ export interface DockIconProps
 	magnification?: number;
 	distance?: number;
 	mouseX?: MotionValue<number>;
+	/** Passed down by Dock: false on touch/no-hover pointers. */
+	canHover?: boolean;
 	className?: string;
 	/** Optional label that springs up above the icon on hover (Aceternity-style). */
 	title?: React.ReactNode;
@@ -109,6 +120,7 @@ const DockIcon = ({
 	magnification = DEFAULT_MAGNIFICATION,
 	distance = DEFAULT_DISTANCE,
 	mouseX,
+	canHover = true,
 	className,
 	title,
 	children,
@@ -145,8 +157,8 @@ const DockIcon = ({
 		<motion.div
 			ref={ref}
 			style={{ width: scaleSize, height: scaleSize, padding }}
-			onMouseEnter={() => setHovered(true)}
-			onMouseLeave={() => setHovered(false)}
+			onMouseEnter={canHover ? () => setHovered(true) : undefined}
+			onMouseLeave={canHover ? () => setHovered(false) : undefined}
 			className={cn(
 				'relative flex aspect-square cursor-pointer items-center justify-center rounded-full',
 				className
