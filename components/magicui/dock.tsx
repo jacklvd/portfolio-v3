@@ -70,6 +70,7 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
 						size: iconSize,
 						magnification: iconMagnification,
 						distance: iconDistance,
+						canHover: canHover,
 					});
 				}
 				return child;
@@ -105,6 +106,8 @@ export interface DockIconProps
 	magnification?: number;
 	distance?: number;
 	mouseX?: MotionValue<number>;
+	/** Passed down by Dock: false on touch/no-hover pointers. */
+	canHover?: boolean;
 	className?: string;
 	/** Optional label that springs up above the icon on hover (Aceternity-style). */
 	title?: React.ReactNode;
@@ -117,6 +120,7 @@ const DockIcon = ({
 	magnification = DEFAULT_MAGNIFICATION,
 	distance = DEFAULT_DISTANCE,
 	mouseX,
+	canHover = true,
 	className,
 	title,
 	children,
@@ -153,8 +157,8 @@ const DockIcon = ({
 		<motion.div
 			ref={ref}
 			style={{ width: scaleSize, height: scaleSize, padding }}
-			onMouseEnter={() => setHovered(true)}
-			onMouseLeave={() => setHovered(false)}
+			onMouseEnter={canHover ? () => setHovered(true) : undefined}
+			onMouseLeave={canHover ? () => setHovered(false) : undefined}
 			className={cn(
 				'relative flex aspect-square cursor-pointer items-center justify-center rounded-full',
 				className
