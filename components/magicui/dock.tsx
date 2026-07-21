@@ -49,6 +49,14 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
 		ref
 	) => {
 		const mouseX = useMotionValue(Infinity);
+		// Touch devices emulate mousemove on tap but never fire mouseleave, so a
+		// tapped icon would stay stuck magnified. Only wire magnification for real
+		// hover-capable pointers; elsewhere mouseX stays Infinity → icons rest flat.
+		const [canHover] = useState(
+			() =>
+				typeof window !== 'undefined' &&
+				window.matchMedia('(hover: hover) and (pointer: fine)').matches
+		);
 
 		const renderChildren = () => {
 			return React.Children.map(children, child => {
@@ -71,8 +79,8 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
 		return (
 			<motion.div
 				ref={ref}
-				onMouseMove={e => mouseX.set(e.pageX)}
-				onMouseLeave={() => mouseX.set(Infinity)}
+				onMouseMove={canHover ? e => mouseX.set(e.pageX) : undefined}
+				onMouseLeave={canHover ? () => mouseX.set(Infinity) : undefined}
 				{...props}
 				className={cn(dockVariants({ className }), {
 					'items-start': direction === 'top',
